@@ -51,6 +51,22 @@ namespace Kungsbacka.AccountTasks
         }
     }
 
+    public class DisableMailboxTask : BasicTask
+    {
+        public DisableMailboxTask()
+            : base("DisableMailbox", "Disable on-prem mailbox")
+        {
+        }
+    }
+
+    public class ConnectMailboxTask : BasicTask
+    {
+        public ConnectMailboxTask()
+            : base("ConnectMailbox", "Connect on-prem mailbox")
+        {
+        }
+    }
+
     public class ConfigureMailboxTask : BasicTask
     {
         [JsonProperty(Order = 10)]
@@ -136,13 +152,13 @@ namespace Kungsbacka.AccountTasks
         public string Message { get; private set; }
 
         public ConfigureMailboxAutoReplyTask(bool enabled)
-            : base("ConfigureMailboxAutoReplyTask", "Set On-prem Mailbox Auto Reply State")
+            : base("ConfigureMailboxAutoReplyTask", "Set on-prem mailbox auto reply state")
         {
             Enabled = enabled;
         }
 
         public ConfigureMailboxAutoReplyTask(bool enabled, string message)
-            : base("ConfigureMailboxAutoReplyTask", "Set On-prem Mailbox Auto Reply State")
+            : base("ConfigureMailboxAutoReplyTask", "Set on-prem mailbox auto reply state")
         {
             Enabled = enabled;
             Message = message;
@@ -184,15 +200,16 @@ namespace Kungsbacka.AccountTasks
         public MailboxType Type { get; private set; }
 
         public OnpremMailboxTask(MailboxType mailboxType)
-            : base("OnpremMailbox", "On-prem Mailbox")
+            : base("OnpremMailbox", "On-prem mailbox")
         {
             Type = mailboxType;
-            var sequence = new List<AccountTask>(5);
-            sequence.Add(new EnableMailboxTask());
-            sequence.Add(new WaitTask(5));
-            sequence.Add(new ConfigureOwaTask());
-            sequence.Add(new ConfigureCalendarTask());
-            sequence.Add(new ConfigureMessageTask());
+            var sequence = new List<AccountTask>() {
+                new EnableMailboxTask(),
+                new WaitTask(5),
+                new ConfigureOwaTask(),
+                new ConfigureCalendarTask(),
+                new ConfigureMessageTask()
+            };
             if (mailboxType == MailboxType.Employee)
             {
                 sequence.Add(new SendWelcomeMailTask());
@@ -201,7 +218,7 @@ namespace Kungsbacka.AccountTasks
         }
 
         public OnpremMailboxTask(MailboxType mailboxType, List<AccountTask> tasks)
-            : base("OnpremMailbox", "On-prem Mailbox")
+            : base("OnpremMailbox", "On-prem mailbox")
         {
             if (tasks == null || tasks.Count == 0)
             {
@@ -212,25 +229,60 @@ namespace Kungsbacka.AccountTasks
         }
     }
 
-    public class OnpremMailboxReconfigureTask : SequenceTask
+    public class ReconfigureOnpremMailboxTask : SequenceTask
     {
         [JsonProperty(Order = 10)]
         [JsonConverter(typeof(StringEnumConverter))]
         public MailboxType Type { get; private set; }
 
-        public OnpremMailboxReconfigureTask(MailboxType mailboxType)
-            : base("OnpremMailboxReconfigure", "Reconfigure On-prem Mailbox")
+        public ReconfigureOnpremMailboxTask(MailboxType mailboxType)
+            : base("OnpremMailboxReconfigure", "Reconfigure on-prem mailbox")
         {
             Type = mailboxType;
-            var sequence = new List<AccountTask>(5);
-            sequence.Add(new ConfigureOwaTask());
-            sequence.Add(new ConfigureCalendarTask());
-            sequence.Add(new ConfigureMessageTask());
+            var sequence = new List<AccountTask>() {
+                new ConfigureMailboxTask(),
+                new ConfigureOwaTask(),
+                new ConfigureCalendarTask(),
+                new ConfigureMessageTask()
+            };
             SetTasks(sequence);
         }
 
-        public OnpremMailboxReconfigureTask(MailboxType mailboxType, List<AccountTask> tasks)
-            : base("OnpremMailboxReconfigure", "Reconfigure On-prem Mailbox")
+        public ReconfigureOnpremMailboxTask(MailboxType mailboxType, List<AccountTask> tasks)
+            : base("OnpremMailboxReconfigure", "Reconfigure on-prem mailbox")
+        {
+            if (tasks == null || tasks.Count == 0)
+            {
+                throw new ArgumentException("tasks");
+            }
+            Type = mailboxType;
+            SetTasks(tasks);
+        }
+    }
+
+    public class ReconnectOnpremMailboxTask : SequenceTask
+    {
+        [JsonProperty(Order = 10)]
+        [JsonConverter(typeof(StringEnumConverter))]
+        public MailboxType Type { get; private set; }
+
+        public ReconnectOnpremMailboxTask(MailboxType mailboxType)
+            : base("ReconnectOnpremMailbox", "Reconnect on-prem mailbox")
+        {
+            Type = mailboxType;
+            var sequence = new List<AccountTask>() {
+                new ConnectMailboxTask(),
+                new WaitTask(5),
+                new ConfigureMailboxTask(),
+                new ConfigureOwaTask(),
+                new ConfigureCalendarTask(),
+                new ConfigureMessageTask()
+            };
+            SetTasks(sequence);
+        }
+
+        public ReconnectOnpremMailboxTask(MailboxType mailboxType, List<AccountTask> tasks)
+            : base("ReconnectOnpremMailbox", "Reconnect on-prem mailbox")
         {
             if (tasks == null || tasks.Count == 0)
             {

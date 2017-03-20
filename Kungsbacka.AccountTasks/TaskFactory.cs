@@ -54,6 +54,16 @@ namespace Kungsbacka.AccountTasks
                     returnTask = new EnableMailboxTask(dictionary.GetNullableMailboxType());
                     break;
                 }
+                case "DisableMailbox":
+                {
+                    returnTask = new DisableMailboxTask();
+                    break;
+                }
+                case "ConnectMailbox":
+                {
+                    returnTask = new ConnectMailboxTask();
+                    break;
+                }
                 case "ConfigureMailbox":
                 {
                     returnTask = new ConfigureMailboxTask(dictionary.GetNullableMailboxType());
@@ -141,7 +151,7 @@ namespace Kungsbacka.AccountTasks
                     );
                     break;
                 }
-                case "OnpremReconfigureMailbox":
+                case "ReconfigureOnpremMailbox":
                 {
                     string mailboxTypeString = dictionary.GetValueOrDefault<string>("Type");
                     MailboxType mailboxType;
@@ -149,7 +159,21 @@ namespace Kungsbacka.AccountTasks
                     {
                         throw new ArgumentException("Type");
                     }
-                    returnTask = new OnpremMailboxReconfigureTask(
+                    returnTask = new ReconfigureOnpremMailboxTask(
+                        mailboxType,
+                        GetTaskSequence(dictionary)
+                    );
+                    break;
+                }
+                case "ReconnectOnpremMailbox":
+                {
+                    string mailboxTypeString = dictionary.GetValueOrDefault<string>("Type");
+                    MailboxType mailboxType;
+                    if (!Enum.TryParse(mailboxTypeString, out mailboxType))
+                    {
+                        throw new ArgumentException("Type");
+                    }
+                    returnTask = new ReconnectOnpremMailboxTask(
                         mailboxType,
                         GetTaskSequence(dictionary)
                     );
