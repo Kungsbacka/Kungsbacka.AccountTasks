@@ -1,4 +1,6 @@
-﻿namespace Kungsbacka.AccountTasks
+﻿using System;
+
+namespace Kungsbacka.AccountTasks
 {
     public class MsolLicense
     {
@@ -17,6 +19,21 @@
 
     public static class MsolPredefinedLicensePackage
     {
+        public static MsolLicense[] GetPackageFromName(string name)
+        {
+            switch (name.ToLower())
+            {
+                case "faculty":
+                    return Faculty;
+                case "student":
+                    return Student;
+                case "ems":
+                    return EMS;
+                default:
+                    throw new ArgumentException($"Unknown license package {name}");
+            }
+        }
+
         public static readonly MsolLicense[] Faculty = new MsolLicense[] {
             new MsolLicense()
             {
