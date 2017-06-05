@@ -89,6 +89,11 @@ namespace Kungsbacka.AccountTasks
                     returnTask = new ConfigureMessageTask();
                     break;
                 }
+                case "CleanupMailbox":
+                {
+                    returnTask = new CleanupMailboxTask();
+                    break;
+                }
                 case "ConfigureMailboxAutoReplyTask":
                 {
                     if (!dictionary.ContainsKey("Enabled"))

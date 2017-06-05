@@ -144,6 +144,14 @@ namespace Kungsbacka.AccountTasks
         }
     }
 
+    public class CleanupMailboxTask : BasicTask
+    {
+        public CleanupMailboxTask()
+            : base("CleanupMailbox", "Cleanup e-mail addresses and alias")
+        {
+        }
+    }
+
     public class ConfigureMailboxAutoReplyTask : BasicTask
     {
         [JsonProperty(Order = 10)]
@@ -276,7 +284,8 @@ namespace Kungsbacka.AccountTasks
                 new ConfigureMailboxTask(),
                 new ConfigureOwaTask(),
                 new ConfigureCalendarTask(),
-                new ConfigureMessageTask()
+                new ConfigureMessageTask(),
+                new CleanupMailboxTask()
             };
             SetTasks(sequence);
         }
