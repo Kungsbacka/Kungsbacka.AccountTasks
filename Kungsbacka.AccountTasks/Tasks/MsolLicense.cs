@@ -41,7 +41,7 @@ namespace Kungsbacka.AccountTasks
         public static readonly MsolLicense[] E3_EMS = new MsolLicense[] {
             new MsolLicense()
             {
-                SkuId = "6fd2c87f-b296-42f0-b197-1e91e994b900", // ENTERPRISEPACK (E3)
+                SkuId = "6fd2c87f-b296-42f0-b197-1e91e994b900", // Office 365 Enterprise E3
                 DisabledPlans = new string[] {
                     "0feaeb32-d00e-4d66-bd5a-43b5b83db82c", // MCOSTANDARD
                     "efb87545-963c-4e0d-99df-69c6916d9eb0" // EXCHANGE_S_ENTERPRISE
@@ -49,14 +49,14 @@ namespace Kungsbacka.AccountTasks
             },
             new MsolLicense()
             {
-                SkuId = "efccb6f7-5641-4e0e-bd10-b4976e1bf68e" // EMS
+                SkuId = "efccb6f7-5641-4e0e-bd10-b4976e1bf68e" // Enterprise Mobility + Security E3
             }
         };
 
         public static readonly MsolLicense[] E3 = new MsolLicense[] {
             new MsolLicense()
             {
-                SkuId = "6fd2c87f-b296-42f0-b197-1e91e994b900", // ENTERPRISEPACK (E3)
+                SkuId = "6fd2c87f-b296-42f0-b197-1e91e994b900", // Office 365 Enterprise E3
                 DisabledPlans = new string[] {
                     "0feaeb32-d00e-4d66-bd5a-43b5b83db82c", // MCOSTANDARD
                     "efb87545-963c-4e0d-99df-69c6916d9eb0" // EXCHANGE_S_ENTERPRISE
@@ -67,33 +67,34 @@ namespace Kungsbacka.AccountTasks
         public static readonly MsolLicense[] Faculty = new MsolLicense[] {
             new MsolLicense()
             {
-                SkuId = "94763226-9b3c-4e75-a931-5c89701abe66", // STANDARDWOFFPACK_FACULTY (A1)
+                SkuId = "e578b273-6db4-4691-bba0-8d691f4da603", // 	Office 365 A3 for faculty
                 DisabledPlans = new string[] {
-                    "0feaeb32-d00e-4d66-bd5a-43b5b83db82c", // MCOSTANDARD
-                    "9aaf7827-d63c-4b61-89c3-182f06f82e5c" // EXCHANGE_S_STANDARD
+                    "efb87545-963c-4e0d-99df-69c6916d9eb0", // EXCHANGE_S_ENTERPRISE
+                    "199a5c09-e0ca-4e37-8f7c-b05d533e1ea2", // MICROSOFTBOOKINGS
+                    "0feaeb32-d00e-4d66-bd5a-43b5b83db82c"  // MCOSTANDARD
                 }
             },
             new MsolLicense()
             {
-                SkuId = "12b8c807-2e20-48fc-b453-542b6ee9d171" // OFFICESUBSCRIPTION_FACULTY
+                SkuId = "12b8c807-2e20-48fc-b453-542b6ee9d171" // Office 365 ProPlus for faculty
             }
         };
 
         public static readonly MsolLicense[] Student = new MsolLicense[] {
             new MsolLicense()
             {
-                SkuId = "314c4481-f395-4525-be8b-2ec4bb1e9d91", // STANDARDWOFFPACK_STUDENT (A1)
+                SkuId = "98b6e773-24d4-4c0d-a968-6e787a1f8204", // Office 365 A3 for students
             },
             new MsolLicense()
             {
-                SkuId = "c32f9321-a627-406d-a114-1f9c81aaafac" // OFFICESUBSCRIPTION_STUDENT
+                SkuId = "c32f9321-a627-406d-a114-1f9c81aaafac" // Office 365 ProPlus for students
             }
         };
 
         public static readonly MsolLicense[] EMS = new MsolLicense[] {
             new MsolLicense()
             {
-                SkuId = "efccb6f7-5641-4e0e-bd10-b4976e1bf68e" // EMS
+                SkuId = "efccb6f7-5641-4e0e-bd10-b4976e1bf68e" // Enterprise Mobility + Security E3
             }
         };
     }
