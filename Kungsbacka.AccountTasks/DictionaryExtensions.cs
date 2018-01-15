@@ -51,7 +51,7 @@ namespace Kungsbacka.AccountTasks
             {
                 string skuId = ((IDictionary<string, object>)item).GetValueOrDefault<string>("SkuId");
                 List<object> disabledPlans = ((IDictionary<string, object>)item).GetValueOrDefault<List<object>>("DisabledPlans");
-                license.Add(new MsolLicense(disabledPlans?.Select(t => (string)t).ToArray(), skuId));
+                license.Add(new MsolLicense(skuId, disabledPlans?.Select(t => (string)t).ToArray()));
             }
             return license.ToArray();
         }
