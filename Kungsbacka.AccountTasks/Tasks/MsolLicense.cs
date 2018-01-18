@@ -70,7 +70,7 @@ namespace Kungsbacka.AccountTasks
                 }
             ),
             new MsolLicense("12b8c807-2e20-48fc-b453-542b6ee9d171"), // Office 365 ProPlus for faculty
-            new MsolLicense("98b6e773-24d4-4c0d-a968-6e787a1f8204")  // Minecraft Education Edition for faculty
+            new MsolLicense("984DF360-9A74-4647-8CF8-696749F6247A")  // Minecraft Education Edition for faculty
         };
 
         public static MsolLicense[] Student => student;
