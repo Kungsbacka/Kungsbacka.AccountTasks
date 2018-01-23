@@ -69,14 +69,12 @@ namespace Kungsbacka.AccountTasks
                     "0feaeb32-d00e-4d66-bd5a-43b5b83db82c"  // MCOSTANDARD
                 }
             ),
-            new MsolLicense("12b8c807-2e20-48fc-b453-542b6ee9d171"), // Office 365 ProPlus for faculty
             new MsolLicense("984DF360-9A74-4647-8CF8-696749F6247A")  // Minecraft Education Edition for faculty
         };
 
         public static MsolLicense[] Student => student;
         private static readonly MsolLicense[] student = new MsolLicense[] {
             new MsolLicense("98b6e773-24d4-4c0d-a968-6e787a1f8204"), // Office 365 A3 for students
-            new MsolLicense("c32f9321-a627-406d-a114-1f9c81aaafac"), // Office 365 ProPlus for students
             new MsolLicense("533b8f26-f74b-4e9c-9c59-50fc4b393b63")  // Minecraft Education Edition for students
         };
 
