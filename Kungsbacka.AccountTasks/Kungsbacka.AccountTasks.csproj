@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DictionaryExtensions.cs" />
+    <Compile Include="Enums.cs" />
     <Compile Include="Tasks\MsolLicense.cs" />
     <Compile Include="Tasks\BasicTask.cs" />
     <Compile Include="Tasks\ExchangeOnline.cs" />

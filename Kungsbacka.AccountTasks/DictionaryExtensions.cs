@@ -55,5 +55,20 @@ namespace Kungsbacka.AccountTasks
             }
             return license.ToArray();
         }
+
+        public static Guid[] GetGuidArray(this IDictionary<string, object> dictionary, string key)
+        {
+            var objectList = dictionary.GetValueOrDefault<List<object>>(key);
+            if (objectList == null)
+            {
+                return null;
+            }
+            var guidList = new List<Guid>(objectList.Count);
+            foreach (object obj in objectList)
+            {
+                guidList.Add(Guid.Parse((string)obj));
+            }
+            return guidList.ToArray();
+        }
     }
 }

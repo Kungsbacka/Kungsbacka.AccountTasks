@@ -5,13 +5,6 @@ using Newtonsoft.Json.Converters;
 
 namespace Kungsbacka.AccountTasks
 {
-    public enum MailboxType
-    {
-        Employee,
-        Student,
-        Shared
-    }
-
     public class EnableMailboxTask : BasicTask
     {
         [JsonProperty(Order = 10)]

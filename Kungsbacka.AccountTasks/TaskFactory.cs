@@ -49,6 +49,11 @@ namespace Kungsbacka.AccountTasks
                     returnTask = new MsolLicenseTask(dictionary.GetMsolLicenseArray());
                     break;
                 }
+                case "MsolLicenseGroup":
+                    {
+                        returnTask = new MsolLicenseGroupTask(dictionary.GetGuidArray("LicenseGroups"));
+                        break;
+                    }
                 case "EnableMailbox":
                 {
                     returnTask = new EnableMailboxTask(dictionary.GetNullableMailboxType());
@@ -72,6 +77,11 @@ namespace Kungsbacka.AccountTasks
                 case "ConfigureOwa":
                 {
                     returnTask = new ConfigureOwaTask(dictionary.GetNullableMailboxType());
+                    break;
+                }
+                case "ConfigureOnlineMailbox":
+                {
+                    returnTask = new ConfigureOnlineMailboxTask(dictionary.GetNullableMailboxType());
                     break;
                 }
                 case "ConfigureOnlineOwa":
@@ -145,8 +155,7 @@ namespace Kungsbacka.AccountTasks
                 case "OnpremMailbox":
                 {
                     string mailboxTypeString = dictionary.GetValueOrDefault<string>("Type");
-                    MailboxType mailboxType;
-                    if (!Enum.TryParse(mailboxTypeString, out mailboxType))
+                    if (!Enum.TryParse(mailboxTypeString, out MailboxType mailboxType))
                     {
                         throw new ArgumentException("Type");
                     }
@@ -159,8 +168,7 @@ namespace Kungsbacka.AccountTasks
                 case "ReconfigureOnpremMailbox":
                 {
                     string mailboxTypeString = dictionary.GetValueOrDefault<string>("Type");
-                    MailboxType mailboxType;
-                    if (!Enum.TryParse(mailboxTypeString, out mailboxType))
+                    if (!Enum.TryParse(mailboxTypeString, out MailboxType mailboxType))
                     {
                         throw new ArgumentException("Type");
                     }
@@ -173,8 +181,7 @@ namespace Kungsbacka.AccountTasks
                 case "ReconnectOnpremMailbox":
                 {
                     string mailboxTypeString = dictionary.GetValueOrDefault<string>("Type");
-                    MailboxType mailboxType;
-                    if (!Enum.TryParse(mailboxTypeString, out mailboxType))
+                    if (!Enum.TryParse(mailboxTypeString, out MailboxType mailboxType))
                     {
                         throw new ArgumentException("Type");
                     }
@@ -195,15 +202,21 @@ namespace Kungsbacka.AccountTasks
                 case "MicrosoftOnline":
                 {
                     returnTask = new MicrosoftOnlineTask(
-                        dictionary.GetMsolLicenseArray(),
+                        dictionary.GetGuidArray("LicenseGroups"),
                         GetTaskSequence(dictionary)
                     );
                     break;
                 }
                 case "MicrosoftOnlineWithMailbox":
                 {
+                    string mailboxTypeString = dictionary.GetValueOrDefault<string>("Type");
+                    if (!Enum.TryParse(mailboxTypeString, out MailboxType mailboxType))
+                    {
+                        throw new ArgumentException("Type");
+                    }
                     returnTask = new MicrosoftOnlineWithMailboxTask(
-                        dictionary.GetMsolLicenseArray(),
+                        mailboxType,
+                        dictionary.GetGuidArray("LicenseGroups"),
                         GetTaskSequence(dictionary)
                     );
                     break;

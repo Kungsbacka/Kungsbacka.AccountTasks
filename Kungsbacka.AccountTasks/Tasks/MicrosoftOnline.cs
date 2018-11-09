@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
-using System.Linq;
+using Newtonsoft.Json.Converters;
 
 namespace Kungsbacka.AccountTasks
 {
@@ -35,38 +35,161 @@ namespace Kungsbacka.AccountTasks
         }
     }
 
+    public class MsolLicenseGroupTask : BasicTask
+    {
+        [JsonProperty(Order = 10)]
+        public Guid[] LicenseGroups { get; private set; }
+        [JsonProperty(Order = 20)]
+        public bool SkipSyncCheck { get; private set; }
+        [JsonProperty(Order = 30)]
+        public bool SkipDynamicGroupCheck { get; private set; }
+
+        public MsolLicenseGroupTask(Guid[] licenseGroups, bool skipSyncCheck, bool skipDynamicGroupCheck)
+            : base("MsolLicenseGroup", "Office 365 License Group")
+        {
+            LicenseGroups = licenseGroups;
+            SkipSyncCheck = skipSyncCheck;
+            SkipDynamicGroupCheck = skipDynamicGroupCheck;
+        }
+
+        public MsolLicenseGroupTask(Guid[] licenseGroups)
+            : this(licenseGroups, false, false)
+        {
+        }
+
+        public MsolLicenseGroupTask(bool skipSyncCheck)
+            : this(null, skipSyncCheck, false)
+        {
+        }
+
+        public MsolLicenseGroupTask(bool skipSyncCheck, bool skipDynamicGroupCheck)
+            : this(null, skipSyncCheck, skipDynamicGroupCheck)
+        {
+        }
+
+        public MsolLicenseGroupTask()
+            : this(null, false, false)
+        {
+        }
+
+        public bool ShouldSerializeLicenseGroups()
+        {
+            return LicenseGroups != null;
+        }
+
+        public bool ShouldSerializeSkipSyncCheck()
+        {
+            return SkipSyncCheck;
+        }
+
+        public bool ShouldSerializeSkipDynamicGroupCheck()
+        {
+            return SkipDynamicGroupCheck;
+        }
+    }
+
+    public class MsolRemoveLicenseGroupTask : BasicTask
+    {
+        [JsonProperty(Order = 10)]
+        public Guid[] LicenseGroups { get; private set; }
+        [JsonProperty(Order = 20)]
+        public bool SkipBaseLicenseCheck { get; private set; }
+
+        public MsolRemoveLicenseGroupTask(Guid[] licenseGroups, bool skipBaseLicenseCheck)
+            : base("MsolRemoveLicenseGroup", "Remove Office 365 License Groups")
+        {
+            LicenseGroups = licenseGroups;
+            SkipBaseLicenseCheck = skipBaseLicenseCheck;
+        }
+
+        public MsolRemoveLicenseGroupTask(Guid[] licenseGroups)
+            : this(licenseGroups, false)
+        {
+        }
+
+        public bool ShouldSerializeSkipBaseLicenseCheck()
+        {
+            return SkipBaseLicenseCheck;
+        }
+    }
+
+    public class MsolRemoveAllLicenseGroupTask : BasicTask
+    {
+        [JsonProperty(Order = 10)]
+        public bool SkipStashLicense { get; private set; }
+
+        public MsolRemoveAllLicenseGroupTask(bool skipStashLicense)
+            : base("MsolRemoveAllLicenseGroup", "Remove all Office 365 License Groups")
+        {
+            SkipStashLicense = skipStashLicense;
+        }
+
+        public MsolRemoveAllLicenseGroupTask()
+            : this(false)
+        {
+        }
+
+        public bool ShouldSerializeSkipStashLicense()
+        {
+            return SkipStashLicense;
+        }
+    }
+
+
+    public class MsolRestoreLicenseGroupTask : BasicTask
+    {
+        [JsonProperty(Order = 10)]
+        public bool SkipSyncCheck { get; private set; }
+
+        public MsolRestoreLicenseGroupTask(bool skipSyncCheck)
+            : base("MsolRestoreLicenseGroup", "Restore stashed Office 365 License Groups")
+        {
+            SkipSyncCheck = skipSyncCheck;
+        }
+
+        public MsolRestoreLicenseGroupTask()
+            : this(false)
+        {
+        }
+
+        public bool ShouldSerializeSkipSyncCheck()
+        {
+            return SkipSyncCheck;
+        }
+    }
+
     public class MicrosoftOnlineTask : SequenceTask
     {
         [JsonProperty(Order = 10)]
-        public MsolLicense[] License { get; private set; }
+        public Guid[] LicenseGroups { get; private set; }
 
-        public MicrosoftOnlineTask(MsolLicense[] license)
+        public MicrosoftOnlineTask(Guid[] licenseGroups)
             : base("MicrosoftOnline", "Office 365")
         {
-            if (license == null || license.Length == 0)
+            if (licenseGroups == null || licenseGroups.Length == 0)
             {
-                throw new ArgumentException("license");
+                throw new ArgumentException(nameof(licenseGroups));
             }
-            License = license;
+            LicenseGroups = licenseGroups;
             SetTasks(new List<AccountTask> {
                 new MsolEnableSyncTask(),
-                new WaitTask(35),
-                new MsolLicenseTask()
+                new WaitTask(1),
+                new MsolLicenseGroupTask()
             });
         }
 
-        public MicrosoftOnlineTask(MsolLicense[] license, List<AccountTask> tasks)
+        public MicrosoftOnlineTask(Guid[] licenseGroups, List<AccountTask> tasks)
             : base("MicrosoftOnline", "Office 365")
         {
-            if (license == null || license.Length == 0)
+            if (licenseGroups == null || licenseGroups.Length == 0)
             {
-                throw new ArgumentException("license");
+                throw new ArgumentException(nameof(licenseGroups));
             }
             if (tasks == null || tasks.Count == 0)
             {
-                throw new ArgumentException("tasks");
+                throw new ArgumentException(nameof(tasks));
             }
-            License = license;
+            LicenseGroups = licenseGroups;
             SetTasks(tasks);
         }
     }
@@ -74,49 +197,73 @@ namespace Kungsbacka.AccountTasks
     public class MicrosoftOnlineWithMailboxTask : SequenceTask
     {
         [JsonProperty(Order = 10)]
-        public MsolLicense[] License { get; private set; }
+        [JsonConverter(typeof(StringEnumConverter))]
+        public MailboxType Type { get; private set; }
 
-        private void CheckLicense(MsolLicense[] license)
-        {
-            // Check if Exchange service plan is disabled
-            bool exchangeDisabled = license.Any(t1 =>
-                t1.DisabledPlans != null && t1.DisabledPlans.Any(t2 => 
-                    t2.Equals("9aaf7827-d63c-4b61-89c3-182f06f82e5c", StringComparison.OrdinalIgnoreCase)
-                )
-            );
-            if (license == null || license.Length == 0 || exchangeDisabled)
-            {
-                throw new ArgumentException("license");
-            }
-        }
+        [JsonProperty(Order = 20)]
+        public Guid[] LicenseGroups { get; private set; }
 
-        public MicrosoftOnlineWithMailboxTask(MsolLicense[] license)
+        public MicrosoftOnlineWithMailboxTask(MailboxType type, Guid[] licenseGroups)
             : base("MicrosoftOnlineWithMailbox", "Office 365 with mailbox")
         {
-            CheckLicense(license);
-            License = license;
-            SetTasks(new List<AccountTask> {
+            if (licenseGroups == null || licenseGroups.Length == 0)
+            {
+                throw new ArgumentException(nameof(licenseGroups));
+            }
+            Type = type;
+            LicenseGroups = licenseGroups;
+            bool ShouldSkipDynamicGroupCheck = type == MailboxType.Student;
+            var tasks = new List<AccountTask> {
                 new EnableRemoteMailboxTask(),
                 new WaitTask(5),
                 new ConfigureRemoteMailboxTask(),
                 new MsolEnableSyncTask(),
-                new WaitTask(35),
-                new MsolLicenseTask(),
-                new WaitTask(5),
+                new MsolLicenseGroupTask(true, ShouldSkipDynamicGroupCheck),
+                new WaitTask(180),
+                new ConfigureOnlineMailboxTask(),
                 new ConfigureOnlineOwaTask()
-            });
+            };
+            if (type == MailboxType.Employee || type == MailboxType.Faculty)
+            {
+                tasks.Add(new SendWelcomeMailTask());
+            }
+            SetTasks(tasks);
         }
 
-        public MicrosoftOnlineWithMailboxTask(MsolLicense[] license, List<AccountTask> tasks)
+        public MicrosoftOnlineWithMailboxTask(MailboxType type, Guid[] licenseGroups, List<AccountTask> tasks)
             : base("MicrosoftOnlineWithMailbox", "Office 365 with mailbox")
         {
-            CheckLicense(license);
+            if (licenseGroups == null || licenseGroups.Length == 0)
+            {
+                throw new ArgumentException(nameof(licenseGroups));
+            }
             if (tasks == null || tasks.Count == 0)
             {
-                throw new ArgumentException("tasks");
+                throw new ArgumentException(nameof(tasks));
             }
-            License = license;
+            Type = type;
+            LicenseGroups = licenseGroups;
             SetTasks(tasks);
+        }
+    }
+
+    public class MicrosoftOnlineRestoreTask : SequenceTask
+    {
+        [JsonProperty(Order = 10)]
+        [JsonConverter(typeof(StringEnumConverter))]
+        public MailboxType Type { get; private set; }
+
+        public MicrosoftOnlineRestoreTask(MailboxType type)
+            : base("MicrosoftOnlineRestore", "Restore Office 365 license and configure mailbox")
+        {
+            Type = type;
+            SetTasks(new List<AccountTask>
+            {
+                new MsolRestoreLicenseGroupTask(),
+                new WaitTask(180),
+                new ConfigureOnlineMailboxTask(),
+                new ConfigureOnlineOwaTask()
+            });
         }
     }
 }

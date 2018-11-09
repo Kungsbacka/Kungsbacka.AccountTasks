@@ -82,5 +82,14 @@ namespace Kungsbacka.AccountTasks.Tests
             var l = TaskFactory.DeserializeTasks(json);
             Assert.AreEqual(((MsolLicenseTask)l[0]).License.Length, 2);
         }
+
+        [TestMethod]
+        public void SerializeDeserializeMsolLicenseGroup()
+        {
+            var a = new MsolLicenseGroupTask(new Guid[] { Guid.Empty });
+            var json = JsonConvert.SerializeObject(a, Formatting.None);
+            var l = TaskFactory.DeserializeTasks(json);
+            Assert.AreEqual(((MsolLicenseGroupTask)l[0]).LicenseGroups.Length, 1);
+        }
     }
 }
