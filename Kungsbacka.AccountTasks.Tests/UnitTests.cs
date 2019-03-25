@@ -20,32 +20,11 @@ namespace Kungsbacka.AccountTasks.Tests
         }
 
         [TestMethod]
-        public void Deserialize2()
-        {
-            string json = "[{\"TaskName\":\"OnpremSkype\",\"ConferencingPolicy\":\"XYZ\",\"Tasks\":[{\"TaskName\":\"EnableCSUser\"},{\"TaskName\":\"Wait\",\"Minutes\":5},{\"TaskName\":\"GrantCSConferencingPolicy\"}]},{\"TaskName\":\"HomeFolder\",\"Path\":\"ABC\",\"Id\":123}]";
-            List<AccountTask> taskList = TaskFactory.DeserializeTasks(json);
-            Assert.AreEqual(taskList.Count, 2);
-            foreach (AccountTask task in taskList)
-            {
-                if (task is OnpremSkypeTask)
-                {
-                    Assert.AreEqual(((OnpremSkypeTask)task).ConferencingPolicy, "XYZ");
-                }
-                else
-                {
-                    Assert.AreEqual(((HomeFolderTask)task).Path, "ABC");
-                }
-            }
-
-        }
-
-        [TestMethod]
         public void DeserializeSerializeWithTime()
         {
-            string json = "[{\"TaskName\":\"MicrosoftOnlineWithMailbox\",\"License\":[{\"SkuId\":\"LICENSE\",\"DisabledPlans\":null}],\"Tasks\":[{\"TaskName\":\"ConfigureOnlineOwa\",\"RetryCount\":42,\"WaitUntil\":\"2015-04-20T12:00:44\"}],\"Id\":4293}]";
+            string json = "[{\"TaskName\":\"SamlId\",\"RetryCount\":42,\"WaitUntil\":\"2015-04-20T12:00:44\",\"Id\":4293}]";
             List<AccountTask> taskList = TaskFactory.DeserializeTasks(json);
-            var sequenceTask = (SequenceTask)taskList[0];
-            var task = (ConfigureOnlineOwaTask)sequenceTask.Tasks[0];
+            var task = (SamlIdTask)taskList[0];
             Assert.IsNotNull(task.WaitUntil);
             Assert.AreEqual(((DateTime)task.WaitUntil).ToString("s"), "2015-04-20T12:00:44");
         }
@@ -53,16 +32,16 @@ namespace Kungsbacka.AccountTasks.Tests
         [TestMethod]
         public void SerializeDeserialize()
         {
-            var homeFolderTask = new HomeFolderTask("PATH");
-            homeFolderTask.Id = 5;
+            var msolLicenseTask = new MsolLicenseTask(MsolPredefinedLicensePackage.E3);
+            msolLicenseTask.Id = 5;
             DateTime date = DateTime.Now.AddDays(1);
-            homeFolderTask.WaitUntil = date;
-            homeFolderTask.RetryCount = 3;
-            string json = JsonConvert.SerializeObject(homeFolderTask);
+            msolLicenseTask.WaitUntil = date;
+            msolLicenseTask.RetryCount = 3;
+            string json = JsonConvert.SerializeObject(msolLicenseTask);
             List<AccountTask> list = TaskFactory.DeserializeTasks(json);
-            var deserializedHomeFolderTask = list[0] as HomeFolderTask;
+            var deserializedHomeFolderTask = list[0] as MsolLicenseTask;
             Assert.AreEqual(deserializedHomeFolderTask.WaitUntil, date);
-            Assert.AreEqual(deserializedHomeFolderTask.Path, "PATH");
+            Assert.AreEqual(deserializedHomeFolderTask.License[0].SkuId, MsolPredefinedLicensePackage.E3[0].SkuId);
         }
 
         [TestMethod]

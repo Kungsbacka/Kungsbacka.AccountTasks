@@ -237,7 +237,7 @@ namespace Kungsbacka.AccountTasks
         public MailboxType Type { get; private set; }
 
         public ReconfigureOnpremMailboxTask(MailboxType mailboxType)
-            : base("OnpremMailboxReconfigure", "Reconfigure on-prem mailbox")
+            : base("ReconfigureOnpremMailbox", "Reconfigure on-prem mailbox")
         {
             Type = mailboxType;
             var sequence = new List<AccountTask>() {
@@ -250,7 +250,7 @@ namespace Kungsbacka.AccountTasks
         }
 
         public ReconfigureOnpremMailboxTask(MailboxType mailboxType, List<AccountTask> tasks)
-            : base("OnpremMailboxReconfigure", "Reconfigure on-prem mailbox")
+            : base("ReconfigureOnpremMailbox", "Reconfigure on-prem mailbox")
         {
             if (tasks == null || tasks.Count == 0)
             {

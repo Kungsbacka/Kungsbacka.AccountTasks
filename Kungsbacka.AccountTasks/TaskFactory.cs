@@ -50,10 +50,40 @@ namespace Kungsbacka.AccountTasks
                     break;
                 }
                 case "MsolLicenseGroup":
+                {
+                    bool skipSyncCheck = dictionary.GetValueOrDefault<bool>("SkipSyncCheck");
+                    bool skipDynamicGroupCheck = dictionary.GetValueOrDefault<bool>("SkipDynamicGroupCheck");
+                    returnTask = new MsolLicenseGroupTask(dictionary.GetGuidArray("LicenseGroups"), skipSyncCheck, skipDynamicGroupCheck);
+                    break;
+                }
+                case "MsolRemoveLicenseGroup":
+                {
+                    bool skipBaseLicenseCheck = dictionary.GetValueOrDefault<bool>("SkipBaseLicenseCheck");
+                    returnTask = new MsolRemoveLicenseGroupTask(dictionary.GetGuidArray("LicenseGroups"), skipBaseLicenseCheck);
+                    break;
+                }
+                case "MsolRemoveAllLicenseGroup":
+                {
+                    bool skipStashLicense = dictionary.GetValueOrDefault<bool>("SkipStashLicense");
+                    returnTask = new MsolRemoveAllLicenseGroupTask(skipStashLicense);
+                    break;
+                }
+                case "MsolRestoreLicenseGroup":
+                {
+                    bool skipSyncCheck = dictionary.GetValueOrDefault<bool>("SkipSyncCheck");
+                    returnTask = new MsolRestoreLicenseGroupTask(skipSyncCheck);
+                    break;
+                }
+                case "MicrosoftOnlineRestore":
+                {
+                    string mailboxTypeString = dictionary.GetValueOrDefault<string>("Type");
+                    if (!Enum.TryParse(mailboxTypeString, out MailboxType mailboxType))
                     {
-                        returnTask = new MsolLicenseGroupTask(dictionary.GetGuidArray("LicenseGroups"));
-                        break;
+                        throw new ArgumentException("Type");
                     }
+                    returnTask = new MicrosoftOnlineRestoreTask(mailboxType);
+                    break;
+                }
                 case "EnableMailbox":
                 {
                     returnTask = new EnableMailboxTask(dictionary.GetNullableMailboxType());
@@ -130,26 +160,9 @@ namespace Kungsbacka.AccountTasks
                     returnTask = new ConfigureRemoteMailboxTask();
                     break;
                 }
-                case "HomeFolder":
-                {
-                    string path = dictionary.GetValueOrDefault<string>("Path");
-                    returnTask = new HomeFolderTask(path);
-                    break;
-                }
                 case "SamlId":
                 {
                     returnTask = new SamlIdTask();
-                    break;
-                }
-                case "EnableCSUser":
-                {
-                    returnTask = new EnableCSUserTask();
-                    break;
-                }
-                case "GrantCSConferencingPolicy":
-                {
-                    string conferencingPolicy = dictionary.GetValueOrDefault<string>("ConferencingPolicy");
-                    returnTask = new GrantCSConferencingPolicyTask(conferencingPolicy);
                     break;
                 }
                 case "OnpremMailbox":
@@ -187,14 +200,6 @@ namespace Kungsbacka.AccountTasks
                     }
                     returnTask = new ReconnectOnpremMailboxTask(
                         mailboxType,
-                        GetTaskSequence(dictionary)
-                    );
-                    break;
-                }
-                case "OnpremSkype":
-                {
-                    returnTask = new OnpremSkypeTask(
-                        dictionary.GetValueOrDefault<string>("ConferencingPolicy"),
                         GetTaskSequence(dictionary)
                     );
                     break;

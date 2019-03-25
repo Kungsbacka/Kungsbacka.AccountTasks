@@ -35,27 +35,6 @@ namespace Kungsbacka.AccountTasks
         }
     }
 
-    public class HomeFolderTask : BasicTask
-    {
-        [JsonProperty(Order = 10)]
-        public string Path { get; private set; }
-        public HomeFolderTask(string path)
-            : base("HomeFolder", "Home Folder")
-        {
-            Path = path;
-        }
-
-        public HomeFolderTask()
-            : this(null)
-        {
-        }
-
-        public bool ShouldSerializePath()
-        {
-            return Path != null;
-        }
-    }
-
     public class SamlIdTask : BasicTask
     {
         public SamlIdTask()

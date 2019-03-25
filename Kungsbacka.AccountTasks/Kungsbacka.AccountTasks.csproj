@@ -56,7 +56,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tasks\Miscellaneous.cs" />
     <Compile Include="Tasks\SequenceTask.cs" />
-    <Compile Include="Tasks\SkypeForBusiness.cs" />
     <Compile Include="Tasks\AccountTask.cs" />
     <Compile Include="TaskFactory.cs" />
   </ItemGroup>
