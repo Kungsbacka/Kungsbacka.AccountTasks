@@ -8,6 +8,14 @@ namespace Kungsbacka.AccountTasks
         Shared
     }
 
+    public enum ExchangeMailboxType
+    {
+        Regular,
+        Room,
+        Equipment,
+        Shared
+    }
+
     public enum AzureADGroupType
     {
         Security,

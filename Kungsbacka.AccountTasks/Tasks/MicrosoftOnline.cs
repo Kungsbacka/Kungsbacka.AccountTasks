@@ -14,7 +14,7 @@ namespace Kungsbacka.AccountTasks
     }
 
     public class MsolLicenseTask : BasicTask
-    {    
+    {
         [JsonProperty(Order = 10)]
         public MsolLicense[] License { get; private set; }
 
@@ -212,13 +212,12 @@ namespace Kungsbacka.AccountTasks
             }
             Type = type;
             LicenseGroups = licenseGroups;
-            bool ShouldSkipDynamicGroupCheck = type == MailboxType.Student;
             var tasks = new List<AccountTask> {
                 new EnableRemoteMailboxTask(),
                 new WaitTask(5),
                 new ConfigureRemoteMailboxTask(),
                 new MsolEnableSyncTask(),
-                new MsolLicenseGroupTask(true, ShouldSkipDynamicGroupCheck),
+                new MsolLicenseGroupTask(true, skipDynamicGroupCheck: type == MailboxType.Student),
                 new WaitTask(180),
                 new ConfigureOnlineMailboxTask(),
                 new ConfigureOnlineOwaTask()
@@ -247,6 +246,31 @@ namespace Kungsbacka.AccountTasks
         }
     }
 
+    public class MicrosoftOnlinePostExpireTask : SequenceTask
+    {
+        public MicrosoftOnlinePostExpireTask()
+            : base("MicrosoftOnlinePostExpire", "Clean up user resources after account expires")
+        {
+            SetTasks(new List<AccountTask>
+            {
+                new AddToOnpremGroupTask("U-exch-ndr-mailbox"),
+                new SetOnlineMailboxTypeTask(ExchangeMailboxType.Shared),
+                new SetHiddenFromAddressListTask(true),
+                new MsolRemoveAllLicenseGroupTask(),
+            });
+        }
+
+        public MicrosoftOnlinePostExpireTask(List<AccountTask> tasks)
+            : base("MicrosoftOnlinePostExpire", "Clean up user resources after account expires")
+        {
+            if (tasks == null || tasks.Count == 0)
+            {
+                throw new ArgumentException(nameof(tasks));
+            }
+            SetTasks(tasks);
+        }
+    }
+
     public class MicrosoftOnlineRestoreTask : SequenceTask
     {
         [JsonProperty(Order = 10)]
@@ -261,9 +285,23 @@ namespace Kungsbacka.AccountTasks
             {
                 new MsolRestoreLicenseGroupTask(),
                 new WaitTask(180),
+                new RemoveFromOnpremGroupTask("U-exch-ndr-mailbox"),
+                new SetOnlineMailboxTypeTask(ExchangeMailboxType.Regular),
+                new SetHiddenFromAddressListTask(false),
                 new ConfigureOnlineMailboxTask(),
                 new ConfigureOnlineOwaTask()
             });
+        }
+
+        public MicrosoftOnlineRestoreTask(MailboxType type, List<AccountTask> tasks)
+            : base("MicrosoftOnlineRestore", "Restore Office 365 license and configure mailbox")
+        {
+            if (tasks == null || tasks.Count == 0)
+            {
+                throw new ArgumentException(nameof(tasks));
+            }
+            Type = type;
+            SetTasks(tasks);
         }
     }
 }

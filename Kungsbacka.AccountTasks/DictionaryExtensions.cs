@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Kungsbacka.AccountTasks
 {
@@ -9,8 +8,7 @@ namespace Kungsbacka.AccountTasks
     {
         public static T GetValueOrDefault<T>(this IDictionary<string, object> dictionary, string key)
         {
-            object value;
-            if (dictionary.TryGetValue(key, out value))
+            if (dictionary.TryGetValue(key, out object value))
             {
                 try
                 {
@@ -24,19 +22,24 @@ namespace Kungsbacka.AccountTasks
             return default(T);
         }
 
-        public static MailboxType? GetNullableMailboxType(this IDictionary<string, object> dictionary)
+        public static T? GetNullableEnum<T>(this IDictionary<string, object> dictionary, string key) where T : struct
         {
-            string mailboxTypeString = dictionary.GetValueOrDefault<string>("Type");
-            if (string.IsNullOrEmpty(mailboxTypeString))
+            string enumString = dictionary.GetValueOrDefault<string>(key);
+            if (string.IsNullOrEmpty(enumString))
             {
                 return null;
             }
-            MailboxType mailboxType;
-            if (!Enum.TryParse(mailboxTypeString, out mailboxType))
+            if (!Enum.TryParse(enumString, out T result))
             {
-                throw new ArgumentException("Unknown MailboxType");
+                throw new ArgumentException("Could not parse string as enum");
             }
-            return mailboxType;
+            return result;
+        }
+
+        public static T GetEnum<T>(this IDictionary<string, object> dictionary, string key)
+        {
+            string enumString = dictionary.GetValueOrDefault<string>(key);
+            return (T)Enum.Parse(typeof(T), enumString);
         }
 
         public static MsolLicense[] GetMsolLicenseArray(this IDictionary<string, object> dictionary)

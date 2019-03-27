@@ -74,44 +74,11 @@ namespace Kungsbacka.AccountTasks
                         returnTask = new MsolRestoreLicenseGroupTask(skipSyncCheck);
                         break;
                     }
-                case "MicrosoftOnlineRestore":
-                    {
-                        string mailboxTypeString = dictionary.GetValueOrDefault<string>("Type");
-                        if (!Enum.TryParse(mailboxTypeString, out MailboxType mailboxType))
-                        {
-                            throw new ArgumentException("Type");
-                        }
-                        returnTask = new MicrosoftOnlineRestoreTask(mailboxType);
-                        break;
-                    }
-                case "EnableMailbox":
-                    {
-                        returnTask = new EnableMailboxTask(dictionary.GetNullableMailboxType());
-                        break;
-                    }
-                case "DisableMailbox":
-                    {
-                        returnTask = new DisableMailboxTask();
-                        break;
-                    }
-                case "ConnectMailbox":
-                    {
-                        returnTask = new ConnectMailboxTask();
-                        break;
-                    }
-                case "ConfigureMailbox":
-                    {
-                        returnTask = new ConfigureMailboxTask(dictionary.GetNullableMailboxType());
-                        break;
-                    }
-                case "ConfigureOwa":
-                    {
-                        returnTask = new ConfigureOwaTask(dictionary.GetNullableMailboxType());
-                        break;
-                    }
                 case "ConfigureOnlineMailbox":
                     {
-                        returnTask = new ConfigureOnlineMailboxTask(dictionary.GetNullableMailboxType());
+                        returnTask = new ConfigureOnlineMailboxTask(
+                            dictionary.GetNullableEnum<MailboxType>("Type")
+                        );
                         break;
                     }
                 case "ConfigureOnlineOwa":
@@ -119,35 +86,28 @@ namespace Kungsbacka.AccountTasks
                         returnTask = new ConfigureOnlineOwaTask();
                         break;
                     }
-                case "ConfigureCalendar":
+                case "SetOnlineMailboxType":
                     {
-                        returnTask = new ConfigureCalendarTask(dictionary.GetNullableMailboxType());
-                        break;
-                    }
-                case "ConfigureMessage":
-                    {
-                        returnTask = new ConfigureMessageTask();
-                        break;
-                    }
-                case "CleanupMailbox":
-                    {
-                        returnTask = new CleanupMailboxTask();
-                        break;
-                    }
-                case "ConfigureMailboxAutoReplyTask":
-                    {
-                        if (!dictionary.ContainsKey("Enabled"))
-                        {
-                            throw new ArgumentException("Enabled");
-                        }
-                        bool enabled = (bool)dictionary["Enabled"];
-                        string message = dictionary.GetValueOrDefault<string>("Message");
-                        returnTask = new ConfigureMailboxAutoReplyTask(enabled, message);
+                        returnTask = new SetOnlineMailboxTypeTask(
+                            dictionary.GetEnum<ExchangeMailboxType>("MailboxType")    
+                        );
                         break;
                     }
                 case "SendWelcomeMail":
                     {
-                        returnTask = new SendWelcomeMailTask(dictionary.GetNullableMailboxType());
+                        returnTask = new SendWelcomeMailTask(
+                            dictionary.GetNullableEnum<MailboxType>("Type")
+                        );
+                        break;
+                    }
+                case "SetHiddenFromAddressList":
+                    {
+                        bool? hidden = dictionary.GetValueOrDefault<bool>("Hidden");
+                        if (hidden == null)
+                        {
+                            throw new ArgumentException("Hidden");
+                        }
+                        returnTask = new SetHiddenFromAddressListTask((bool)hidden);
                         break;
                     }
                 case "EnableRemoteMailbox":
@@ -165,45 +125,6 @@ namespace Kungsbacka.AccountTasks
                         returnTask = new SamlIdTask();
                         break;
                     }
-                case "OnpremMailbox":
-                    {
-                        string mailboxTypeString = dictionary.GetValueOrDefault<string>("Type");
-                        if (!Enum.TryParse(mailboxTypeString, out MailboxType mailboxType))
-                        {
-                            throw new ArgumentException("Type");
-                        }
-                        returnTask = new OnpremMailboxTask(
-                            mailboxType,
-                            GetTaskSequence(dictionary)
-                        );
-                        break;
-                    }
-                case "ReconfigureOnpremMailbox":
-                    {
-                        string mailboxTypeString = dictionary.GetValueOrDefault<string>("Type");
-                        if (!Enum.TryParse(mailboxTypeString, out MailboxType mailboxType))
-                        {
-                            throw new ArgumentException("Type");
-                        }
-                        returnTask = new ReconfigureOnpremMailboxTask(
-                            mailboxType,
-                            GetTaskSequence(dictionary)
-                        );
-                        break;
-                    }
-                case "ReconnectOnpremMailbox":
-                    {
-                        string mailboxTypeString = dictionary.GetValueOrDefault<string>("Type");
-                        if (!Enum.TryParse(mailboxTypeString, out MailboxType mailboxType))
-                        {
-                            throw new ArgumentException("Type");
-                        }
-                        returnTask = new ReconnectOnpremMailboxTask(
-                            mailboxType,
-                            GetTaskSequence(dictionary)
-                        );
-                        break;
-                    }
                 case "MicrosoftOnline":
                     {
                         returnTask = new MicrosoftOnlineTask(
@@ -214,16 +135,44 @@ namespace Kungsbacka.AccountTasks
                     }
                 case "MicrosoftOnlineWithMailbox":
                     {
-                        string mailboxTypeString = dictionary.GetValueOrDefault<string>("Type");
-                        if (!Enum.TryParse(mailboxTypeString, out MailboxType mailboxType))
-                        {
-                            throw new ArgumentException("Type");
-                        }
                         returnTask = new MicrosoftOnlineWithMailboxTask(
-                            mailboxType,
+                            dictionary.GetEnum<MailboxType>("Type"),
                             dictionary.GetGuidArray("LicenseGroups"),
                             GetTaskSequence(dictionary)
                         );
+                        break;
+                    }
+                case "MicrosoftOnlinePostExpire":
+                    {
+                        returnTask = new MicrosoftOnlinePostExpireTask(GetTaskSequence(dictionary));
+                        break;
+                    }
+                case "MicrosoftOnlineRestore":
+                    {
+                        returnTask = new MicrosoftOnlineRestoreTask(
+                            dictionary.GetEnum<MailboxType>("Type"),
+                            GetTaskSequence(dictionary)
+                        );
+                        break;
+                    }
+                case "AddToOnpremGroup":
+                    {
+                        string group = dictionary.GetValueOrDefault<string>("Group");
+                        if (string.IsNullOrEmpty(group))
+                        {
+                            throw new ArgumentException("Group");
+                        }
+                        returnTask = new AddToOnpremGroupTask(group);
+                        break;
+                    }
+                case "RemoveFromOnpremGroup":
+                    {
+                        string group = dictionary.GetValueOrDefault<string>("Group");
+                        if (string.IsNullOrEmpty(group))
+                        {
+                            throw new ArgumentException("Group");
+                        }
+                        returnTask = new RemoveFromOnpremGroupTask(group);
                         break;
                     }
                 default:

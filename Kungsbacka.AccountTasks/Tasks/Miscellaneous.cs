@@ -42,4 +42,28 @@ namespace Kungsbacka.AccountTasks
         {
         }
     }
+
+    public class AddToOnpremGroupTask : BasicTask
+    {
+        [JsonProperty(Order = 10)]
+        public string Group { get; private set; }
+
+        public AddToOnpremGroupTask(string group)
+            : base("AddToOnpremGroup", "Add user to an onprem group")
+        {
+            Group = group;
+        }
+    }
+
+    public class RemoveFromOnpremGroupTask : BasicTask
+    {
+        [JsonProperty(Order = 10)]
+        public string Group { get; private set; }
+
+        public RemoveFromOnpremGroupTask(string group)
+            : base("RemoveFromOnpremGroup", "Remove user from an onprem group")
+        {
+            Group = group;
+        }
+    }
 }
