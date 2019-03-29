@@ -129,7 +129,7 @@ namespace Kungsbacka.AccountTasks
                     {
                         returnTask = new MicrosoftOnlineTask(
                             dictionary.GetGuidArray("LicenseGroups"),
-                            GetTaskSequence(dictionary)
+                            dictionary.GetTaskSequence()
                         );
                         break;
                     }
@@ -138,20 +138,20 @@ namespace Kungsbacka.AccountTasks
                         returnTask = new MicrosoftOnlineWithMailboxTask(
                             dictionary.GetEnum<MailboxType>("Type"),
                             dictionary.GetGuidArray("LicenseGroups"),
-                            GetTaskSequence(dictionary)
+                            dictionary.GetTaskSequence()
                         );
                         break;
                     }
                 case "MicrosoftOnlinePostExpire":
                     {
-                        returnTask = new MicrosoftOnlinePostExpireTask(GetTaskSequence(dictionary));
+                        returnTask = new MicrosoftOnlinePostExpireTask(dictionary.GetTaskSequence());
                         break;
                     }
                 case "MicrosoftOnlineRestore":
                     {
                         returnTask = new MicrosoftOnlineRestoreTask(
                             dictionary.GetEnum<MailboxType>("Type"),
-                            GetTaskSequence(dictionary)
+                            dictionary.GetTaskSequence()
                         );
                         break;
                     }
@@ -187,22 +187,6 @@ namespace Kungsbacka.AccountTasks
                 ((BasicTask)returnTask).WaitUntil = dictionary.GetValueOrDefault<DateTime?>("WaitUntil");
             }
             return returnTask;
-        }
-
-        static List<AccountTask> GetTaskSequence(IDictionary<string, object> dictionary)
-        {
-            dynamic taskSequence = dictionary.GetValueOrDefault<dynamic>("Tasks");
-            if (!(taskSequence is List<object>) || taskSequence.Count == 0)
-            {
-                throw new ArgumentException("Tasks");
-            }
-            var taskList = new List<AccountTask>(taskSequence.Count);
-            foreach (dynamic dynamicTask in taskSequence)
-            {
-                AccountTask task = TaskFactory.CreateTask(dynamicTask);
-                taskList.Add(task);
-            }
-            return taskList;
         }
     }
 }

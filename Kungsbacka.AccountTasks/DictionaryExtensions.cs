@@ -22,6 +22,22 @@ namespace Kungsbacka.AccountTasks
             return default(T);
         }
 
+        public static List<AccountTask> GetTaskSequence(this IDictionary<string, object> dictionary)
+        {
+            dynamic taskSequence = dictionary.GetValueOrDefault<dynamic>("Tasks");
+            if (!(taskSequence is List<object>) || taskSequence.Count == 0)
+            {
+                throw new ArgumentException("Tasks");
+            }
+            var taskList = new List<AccountTask>(taskSequence.Count);
+            foreach (dynamic dynamicTask in taskSequence)
+            {
+                AccountTask task = TaskFactory.CreateTask(dynamicTask);
+                taskList.Add(task);
+            }
+            return taskList;
+        }
+
         public static T? GetNullableEnum<T>(this IDictionary<string, object> dictionary, string key) where T : struct
         {
             string enumString = dictionary.GetValueOrDefault<string>(key);
