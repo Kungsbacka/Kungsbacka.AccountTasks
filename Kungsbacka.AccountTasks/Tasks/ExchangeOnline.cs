@@ -21,6 +21,11 @@ namespace Kungsbacka.AccountTasks
             : this(null)
         {
         }
+
+        public bool ShouldSerializeType()
+        {
+            return Type != null;
+        }
     }
 
     public class ConfigureOnlineOwaTask : BasicTask
