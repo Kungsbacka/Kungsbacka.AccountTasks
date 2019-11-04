@@ -217,7 +217,7 @@ namespace Kungsbacka.AccountTasks
                 new WaitTask(5),
                 new ConfigureRemoteMailboxTask(),
                 new MsolEnableSyncTask(),
-                new MsolLicenseGroupTask(true, skipDynamicGroupCheck: type == MailboxType.Student),
+                new MsolLicenseGroupTask(skipSyncCheck: true, skipDynamicGroupCheck: false),
                 new WaitTask(180),
                 new ConfigureOnlineMailboxTask(),
                 new ConfigureOnlineOwaTask()
