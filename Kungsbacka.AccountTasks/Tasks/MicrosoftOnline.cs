@@ -218,7 +218,7 @@ namespace Kungsbacka.AccountTasks
                 new ConfigureRemoteMailboxTask(),
                 new MsolEnableSyncTask(),
                 new MsolLicenseGroupTask(skipSyncCheck: true, skipDynamicGroupCheck: false),
-                new WaitTask(180),
+                new WaitTask(120),
                 new ConfigureOnlineMailboxTask(),
                 new ConfigureOnlineOwaTask()
             };
@@ -284,7 +284,7 @@ namespace Kungsbacka.AccountTasks
             SetTasks(new List<AccountTask>
             {
                 new MsolRestoreLicenseGroupTask(),
-                new WaitTask(180),
+                new WaitTask(120),
                 new RemoveFromOnpremGroupTask("U-exch-ndr-mailbox"),
                 new SetOnlineMailboxTypeTask(ExchangeMailboxType.Regular),
                 new SetHiddenFromAddressListTask(false),

@@ -16,10 +16,10 @@ namespace Kungsbacka.AccountTasks
                 }
                 catch
                 {
-                    return default(T);
+                    return default;
                 }
             }
-            return default(T);
+            return default;
         }
 
         public static List<AccountTask> GetTaskSequence(this IDictionary<string, object> dictionary)

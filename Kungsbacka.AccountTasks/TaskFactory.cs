@@ -29,11 +29,11 @@ namespace Kungsbacka.AccountTasks
 
         public static AccountTask CreateTask(IDictionary<string, object> dictionary)
         {
-            AccountTask returnTask = null;
             string taskName = dictionary.GetValueOrDefault<string>("TaskName");
+            AccountTask returnTask;
             switch (taskName)
             {
-                case "Wait" :
+                case "Wait":
                     {
                         long? minutes = dictionary.GetValueOrDefault<long?>("Minutes");
                         returnTask = new WaitTask(minutes);
@@ -89,7 +89,7 @@ namespace Kungsbacka.AccountTasks
                 case "SetOnlineMailboxType":
                     {
                         returnTask = new SetOnlineMailboxTypeTask(
-                            dictionary.GetEnum<ExchangeMailboxType>("MailboxType")    
+                            dictionary.GetEnum<ExchangeMailboxType>("MailboxType")
                         );
                         break;
                     }
