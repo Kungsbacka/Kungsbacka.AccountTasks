@@ -1,20 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Newtonsoft.Json;
 
 namespace Kungsbacka.AccountTasks
 {
     public class SequenceTask : AccountTask
     {
         [JsonProperty(Order = 100)]
-        public ReadOnlyCollection<AccountTask> Tasks
-        {
-            get
-            {
-                return _tasks.AsReadOnly();
-            }
-        }
-        List<AccountTask> _tasks;
+        public ReadOnlyCollection<AccountTask> Tasks => _tasks.AsReadOnly();
+
+        private List<AccountTask> _tasks;
 
         public SequenceTask(string taskName)
             : base(taskName, taskName)

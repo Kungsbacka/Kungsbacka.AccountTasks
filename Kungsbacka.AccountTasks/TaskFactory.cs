@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Dynamic;
-using Newtonsoft.Json;
 
 namespace Kungsbacka.AccountTasks
 {
@@ -19,7 +19,7 @@ namespace Kungsbacka.AccountTasks
                 ExpandoObject tmp = JsonConvert.DeserializeObject<ExpandoObject>(taskJson);
                 deserializedTasks = new List<ExpandoObject> { tmp };
             }
-            var taskList = new List<AccountTask>(deserializedTasks.Count);
+            List<AccountTask> taskList = new List<AccountTask>(deserializedTasks.Count);
             foreach (dynamic task in deserializedTasks)
             {
                 taskList.Add(TaskFactory.CreateTask(task));

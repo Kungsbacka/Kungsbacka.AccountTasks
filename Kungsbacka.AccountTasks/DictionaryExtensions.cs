@@ -29,7 +29,7 @@ namespace Kungsbacka.AccountTasks
             {
                 throw new ArgumentException("Tasks");
             }
-            var taskList = new List<AccountTask>(taskSequence.Count);
+            List<AccountTask> taskList = new List<AccountTask>(taskSequence.Count);
             foreach (dynamic dynamicTask in taskSequence)
             {
                 AccountTask task = TaskFactory.CreateTask(dynamicTask);
@@ -60,7 +60,7 @@ namespace Kungsbacka.AccountTasks
 
         public static MsolLicense[] GetMsolLicenseArray(this IDictionary<string, object> dictionary)
         {
-            var deserializedLicense = dictionary.GetValueOrDefault<List<object>>("License");
+            List<object> deserializedLicense = dictionary.GetValueOrDefault<List<object>>("License");
             if (deserializedLicense == null)
             {
                 return null;
@@ -77,12 +77,12 @@ namespace Kungsbacka.AccountTasks
 
         public static Guid[] GetGuidArray(this IDictionary<string, object> dictionary, string key)
         {
-            var objectList = dictionary.GetValueOrDefault<List<object>>(key);
+            List<object> objectList = dictionary.GetValueOrDefault<List<object>>(key);
             if (objectList == null)
             {
                 return null;
             }
-            var guidList = new List<Guid>(objectList.Count);
+            List<Guid> guidList = new List<Guid>(objectList.Count);
             foreach (object obj in objectList)
             {
                 guidList.Add(Guid.Parse((string)obj));

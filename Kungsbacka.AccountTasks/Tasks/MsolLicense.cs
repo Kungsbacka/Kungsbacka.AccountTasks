@@ -10,8 +10,8 @@ namespace Kungsbacka.AccountTasks
 
         public MsolLicense(string skuId = null, string[] disabledPlans = null)
         {
-           SkuId = skuId;
-           DisabledPlans = disabledPlans;
+            SkuId = skuId;
+            DisabledPlans = disabledPlans;
         }
     }
 

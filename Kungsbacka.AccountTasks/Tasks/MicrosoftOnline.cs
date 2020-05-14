@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Collections.Generic;
 
 namespace Kungsbacka.AccountTasks
 {
@@ -212,7 +212,7 @@ namespace Kungsbacka.AccountTasks
             }
             Type = type;
             LicenseGroups = licenseGroups;
-            var tasks = new List<AccountTask> {
+            List<AccountTask> tasks = new List<AccountTask> {
                 new EnableRemoteMailboxTask(),
                 new WaitTask(5),
                 new ConfigureRemoteMailboxTask(),

@@ -4,18 +4,12 @@ namespace Kungsbacka.AccountTasks
 {
     public class WaitTask : BasicTask
     {
-        long? _minutes;
+        private long? _minutes;
         [JsonProperty(Order = 10)]
         public long? Minutes
         {
-            get
-            {
-                return _minutes;
-            }
-            private set
-            {
-                _minutes = value;
-            }
+            get => _minutes;
+            private set => _minutes = value;
         }
 
         public WaitTask(long? minutes)

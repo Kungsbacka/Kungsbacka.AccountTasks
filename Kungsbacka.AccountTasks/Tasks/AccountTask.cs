@@ -38,12 +38,14 @@ namespace Kungsbacka.AccountTasks
         {
             if (indented)
             {
-                using (var stringWriter = new System.IO.StringWriter())
+                using (System.IO.StringWriter stringWriter = new System.IO.StringWriter())
                 {
-                    var jsonTextWriter = new JsonTextWriter(stringWriter);
-                    jsonTextWriter.Formatting = Formatting.Indented;
-                    jsonTextWriter.Indentation = 3;
-                    var jsonSerializer = new JsonSerializer();
+                    JsonTextWriter jsonTextWriter = new JsonTextWriter(stringWriter)
+                    {
+                        Formatting = Formatting.Indented,
+                        Indentation = 3
+                    };
+                    JsonSerializer jsonSerializer = new JsonSerializer();
                     jsonSerializer.Serialize(jsonTextWriter, this);
                     return stringWriter.ToString();
                 }
