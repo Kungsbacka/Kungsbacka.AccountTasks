@@ -1,3 +1,5 @@
+using Newtonsoft.Json;
+
 namespace Kungsbacka.AccountTasks
 {
     public class AzureADGroup
