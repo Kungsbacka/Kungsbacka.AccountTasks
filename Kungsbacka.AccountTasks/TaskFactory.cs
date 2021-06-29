@@ -181,10 +181,10 @@ namespace Kungsbacka.AccountTasks
                     }
             }
             returnTask.Id = dictionary.GetValueOrDefault<long?>("Id");
-            if (returnTask is BasicTask)
+            if (returnTask is BasicTask task)
             {
-                ((BasicTask)returnTask).RetryCount = dictionary.GetValueOrDefault<long?>("RetryCount");
-                ((BasicTask)returnTask).WaitUntil = dictionary.GetValueOrDefault<DateTime?>("WaitUntil");
+                task.RetryCount = dictionary.GetValueOrDefault<long?>("RetryCount");
+                task.WaitUntil = dictionary.GetValueOrDefault<DateTime?>("WaitUntil");
             }
             return returnTask;
         }
