@@ -21,7 +21,7 @@ namespace Kungsbacka.AccountTasks.Tests
         [TestMethod]
         public void SerializeDeserializeWithRetryCount()
         {
-            var task = new MsolLicenseTask(MsolPredefinedLicensePackage.E3)
+            var task = new MsolLicenseTask(new MsolLicense[] { new MsolLicense("SKU-ID") })
             {
                 Id = 5
             };
@@ -32,7 +32,7 @@ namespace Kungsbacka.AccountTasks.Tests
             var deserializedTasks = TaskFactory.DeserializeTasks(json);
             var msolLicenseTask = (MsolLicenseTask)deserializedTasks[0];
             Assert.AreEqual(msolLicenseTask.WaitUntil, date);
-            Assert.AreEqual(msolLicenseTask.License[0].SkuId, MsolPredefinedLicensePackage.E3[0].SkuId);
+            Assert.AreEqual(msolLicenseTask.License[0].SkuId, "SKU-ID");
         }
 
         [TestMethod]
@@ -42,15 +42,6 @@ namespace Kungsbacka.AccountTasks.Tests
             var task = new BasicTask("-InvalidTask-");
             string json = JsonConvert.SerializeObject(task);
             TaskFactory.DeserializeTasks(json);
-        }
-
-        [TestMethod]
-        public void SerializeDeserializeMsolLicense()
-        {
-            var task = new MsolLicenseTask(MsolPredefinedLicensePackage.Faculty);
-            var json = JsonConvert.SerializeObject(task);
-            var deserializedTasks = TaskFactory.DeserializeTasks(json);
-            Assert.AreEqual(((MsolLicenseTask)deserializedTasks[0]).License.Length, 2);
         }
 
         [TestMethod]

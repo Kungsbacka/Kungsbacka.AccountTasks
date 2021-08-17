@@ -8,7 +8,7 @@ namespace Kungsbacka.AccountTasks
     public class MsolEnableSyncTask : BasicTask
     {
         public MsolEnableSyncTask()
-            : base("MsolEnableSync", "Synchronize to Office 365")
+            : base("MsolEnableSync", "Synchronize to Azure AD")
         {
         }
     }
@@ -19,7 +19,7 @@ namespace Kungsbacka.AccountTasks
         public MsolLicense[] License { get; private set; }
 
         public MsolLicenseTask(MsolLicense[] license)
-            : base("MsolLicense", "Office 365 License")
+            : base("MsolLicense", "Directly assign Microsoft 365 licenses")
         {
             License = license;
         }
@@ -45,7 +45,7 @@ namespace Kungsbacka.AccountTasks
         public bool SkipDynamicGroupCheck { get; private set; }
 
         public MsolLicenseGroupTask(Guid[] licenseGroups, bool skipSyncCheck, bool skipDynamicGroupCheck)
-            : base("MsolLicenseGroup", "Office 365 License Group")
+            : base("MsolLicenseGroup", "Add to Microsoft 365 license groups")
         {
             LicenseGroups = licenseGroups;
             SkipSyncCheck = skipSyncCheck;
@@ -96,7 +96,7 @@ namespace Kungsbacka.AccountTasks
         public bool SkipBaseLicenseCheck { get; private set; }
 
         public MsolRemoveLicenseGroupTask(Guid[] licenseGroups, bool skipBaseLicenseCheck)
-            : base("MsolRemoveLicenseGroup", "Remove Office 365 License Groups")
+            : base("MsolRemoveLicenseGroup", "Remove from Microsoft 365 license groups")
         {
             LicenseGroups = licenseGroups;
             SkipBaseLicenseCheck = skipBaseLicenseCheck;
@@ -119,7 +119,7 @@ namespace Kungsbacka.AccountTasks
         public bool SkipStashLicense { get; private set; }
 
         public MsolRemoveAllLicenseGroupTask(bool skipStashLicense)
-            : base("MsolRemoveAllLicenseGroup", "Remove all Office 365 License Groups")
+            : base("MsolRemoveAllLicenseGroup", "Remove from all Microsoft 365 license groups")
         {
             SkipStashLicense = skipStashLicense;
         }
@@ -142,7 +142,7 @@ namespace Kungsbacka.AccountTasks
         public bool SkipSyncCheck { get; private set; }
 
         public MsolRestoreLicenseGroupTask(bool skipSyncCheck)
-            : base("MsolRestoreLicenseGroup", "Restore stashed Office 365 License Groups")
+            : base("MsolRestoreLicenseGroup", "Re-add to stashed Microsoft 365 license groups")
         {
             SkipSyncCheck = skipSyncCheck;
         }
@@ -164,7 +164,7 @@ namespace Kungsbacka.AccountTasks
         public Guid[] LicenseGroups { get; private set; }
 
         public MicrosoftOnlineTask(Guid[] licenseGroups)
-            : base("MicrosoftOnline", "Office 365")
+            : base("MicrosoftOnline", "Microsoft 365")
         {
             if (licenseGroups == null || licenseGroups.Length == 0)
             {
@@ -179,7 +179,7 @@ namespace Kungsbacka.AccountTasks
         }
 
         public MicrosoftOnlineTask(Guid[] licenseGroups, List<AccountTask> tasks)
-            : base("MicrosoftOnline", "Office 365")
+            : base("MicrosoftOnline", "Microsoft 365")
         {
             if (licenseGroups == null || licenseGroups.Length == 0)
             {
@@ -204,7 +204,7 @@ namespace Kungsbacka.AccountTasks
         public Guid[] LicenseGroups { get; private set; }
 
         public MicrosoftOnlineWithMailboxTask(MailboxType type, Guid[] licenseGroups)
-            : base("MicrosoftOnlineWithMailbox", "Office 365 with mailbox")
+            : base("MicrosoftOnlineWithMailbox", "Microsoft 365 with mailbox")
         {
             if (licenseGroups == null || licenseGroups.Length == 0)
             {
@@ -230,7 +230,7 @@ namespace Kungsbacka.AccountTasks
         }
 
         public MicrosoftOnlineWithMailboxTask(MailboxType type, Guid[] licenseGroups, List<AccountTask> tasks)
-            : base("MicrosoftOnlineWithMailbox", "Office 365 with mailbox")
+            : base("MicrosoftOnlineWithMailbox", "Microsoft 365 with mailbox")
         {
             if (licenseGroups == null || licenseGroups.Length == 0)
             {
@@ -278,7 +278,7 @@ namespace Kungsbacka.AccountTasks
         public MailboxType Type { get; private set; }
 
         public MicrosoftOnlineRestoreTask(MailboxType type)
-            : base("MicrosoftOnlineRestore", "Restore Office 365 license and configure mailbox")
+            : base("MicrosoftOnlineRestore", "Restore Microsoft 365 licenses and configure mailbox")
         {
             Type = type;
             SetTasks(new List<AccountTask>
@@ -294,7 +294,7 @@ namespace Kungsbacka.AccountTasks
         }
 
         public MicrosoftOnlineRestoreTask(MailboxType type, List<AccountTask> tasks)
-            : base("MicrosoftOnlineRestore", "Restore Office 365 license and configure mailbox")
+            : base("MicrosoftOnlineRestore", "Restore Microsoft 365 licenses and configure mailbox")
         {
             if (tasks == null || tasks.Count == 0)
             {
