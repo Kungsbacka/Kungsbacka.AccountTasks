@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Kungsbacka.AccountTasks
+﻿namespace Kungsbacka.AccountTasks
 {
     public class MsolLicense
     {
