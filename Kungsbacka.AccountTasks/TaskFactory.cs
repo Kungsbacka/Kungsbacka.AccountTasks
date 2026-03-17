@@ -1,7 +1,6 @@
-﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Dynamic;
+using System.Text.Json;
 
 namespace Kungsbacka.AccountTasks
 {
@@ -9,22 +8,56 @@ namespace Kungsbacka.AccountTasks
     {
         public static List<AccountTask> DeserializeTasks(string taskJson)
         {
-            dynamic deserializedTasks;
-            if (taskJson[0] == '[')
+            using (var document = JsonDocument.Parse(taskJson))
             {
-                deserializedTasks = JsonConvert.DeserializeObject<List<ExpandoObject>>(taskJson);
+                if (document.RootElement.ValueKind == JsonValueKind.Array)
+                {
+                    var taskList = new List<AccountTask>(document.RootElement.GetArrayLength());
+                    foreach (var element in document.RootElement.EnumerateArray())
+                        taskList.Add(CreateTask(ConvertObject(element)));
+                    return taskList;
+                }
+                else
+                {
+                    return new List<AccountTask> { CreateTask(ConvertObject(document.RootElement)) };
+                }
             }
-            else
+        }
+
+        private static Dictionary<string, object> ConvertObject(JsonElement element)
+        {
+            var dict = new Dictionary<string, object>();
+            foreach (var prop in element.EnumerateObject())
+                dict[prop.Name] = ConvertElement(prop.Value);
+            return dict;
+        }
+
+        private static object ConvertElement(JsonElement element)
+        {
+            switch (element.ValueKind)
             {
-                ExpandoObject tmp = JsonConvert.DeserializeObject<ExpandoObject>(taskJson);
-                deserializedTasks = new List<ExpandoObject> { tmp };
+                case JsonValueKind.Object:
+                    return ConvertObject(element);
+                case JsonValueKind.Array:
+                    var list = new List<object>();
+                    foreach (var item in element.EnumerateArray())
+                        list.Add(ConvertElement(item));
+                    return list;
+                case JsonValueKind.String:
+                    if (element.TryGetDateTime(out DateTime dt))
+                        return dt;
+                    return element.GetString();
+                case JsonValueKind.Number:
+                    return element.GetInt64();
+                case JsonValueKind.True:
+                    return true;
+                case JsonValueKind.False:
+                    return false;
+                case JsonValueKind.Null:
+                    return null;
+                default:
+                    throw new JsonException($"Unsupported JsonValueKind: {element.ValueKind}");
             }
-            List<AccountTask> taskList = new List<AccountTask>(deserializedTasks.Count);
-            foreach (dynamic task in deserializedTasks)
-            {
-                taskList.Add(TaskFactory.CreateTask(task));
-            }
-            return taskList;
         }
 
         public static AccountTask CreateTask(IDictionary<string, object> dictionary)

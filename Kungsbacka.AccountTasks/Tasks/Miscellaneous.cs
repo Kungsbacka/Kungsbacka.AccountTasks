@@ -1,11 +1,13 @@
-﻿using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Kungsbacka.AccountTasks
 {
     public class WaitTask : BasicTask
     {
         private long? _minutes;
-        [JsonProperty(Order = 10)]
+
+        [JsonPropertyOrder(10)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public long? Minutes
         {
             get => _minutes;
@@ -22,11 +24,6 @@ namespace Kungsbacka.AccountTasks
             : this(null)
         {
         }
-
-        public bool ShouldSerializeMinutes()
-        {
-            return Minutes != null;
-        }
     }
 
     public class SamlIdTask : BasicTask
@@ -39,7 +36,7 @@ namespace Kungsbacka.AccountTasks
 
     public class AddToOnpremGroupTask : BasicTask
     {
-        [JsonProperty(Order = 10)]
+        [JsonPropertyOrder(10)]
         public string Group { get; private set; }
 
         public AddToOnpremGroupTask(string group)
@@ -51,7 +48,7 @@ namespace Kungsbacka.AccountTasks
 
     public class RemoveFromOnpremGroupTask : BasicTask
     {
-        [JsonProperty(Order = 10)]
+        [JsonPropertyOrder(10)]
         public string Group { get; private set; }
 
         public RemoveFromOnpremGroupTask(string group)

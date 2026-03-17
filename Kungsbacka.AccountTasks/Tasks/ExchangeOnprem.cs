@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+using System.Text.Json.Serialization;
 
 namespace Kungsbacka.AccountTasks
 {
@@ -32,8 +31,9 @@ namespace Kungsbacka.AccountTasks
     {
         // Not optional, but declare as nullable anyway since mailbox type
         // can also come from the sequence task container.
-        [JsonProperty(Order = 10)]
-        [JsonConverter(typeof(StringEnumConverter))]
+        [JsonPropertyOrder(10)]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public MailboxType? Type { get; private set; }
 
         public SendWelcomeMailTask(MailboxType? mailboxType)
@@ -46,16 +46,11 @@ namespace Kungsbacka.AccountTasks
             : this(null)
         {
         }
-
-        public bool ShouldSerializeType()
-        {
-            return Type != null;
-        }
     }
 
     public class SetHiddenFromAddressListTask : BasicTask
     {
-        [JsonProperty(Order = 10)]
+        [JsonPropertyOrder(10)]
         public bool Hidden { get; private set; }
 
         public SetHiddenFromAddressListTask(bool hidden)

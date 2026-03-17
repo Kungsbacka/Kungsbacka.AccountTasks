@@ -1,7 +1,6 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Kungsbacka.AccountTasks
 {
@@ -15,7 +14,8 @@ namespace Kungsbacka.AccountTasks
 
     public class MsolLicenseTask : BasicTask
     {
-        [JsonProperty(Order = 10)]
+        [JsonPropertyOrder(10)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public MsolLicense[] License { get; private set; }
 
         public MsolLicenseTask(MsolLicense[] license)
@@ -28,20 +28,20 @@ namespace Kungsbacka.AccountTasks
             : this(null)
         {
         }
-
-        public bool ShouldSerializeLicense()
-        {
-            return License != null;
-        }
     }
 
     public class MsolLicenseGroupTask : BasicTask
     {
-        [JsonProperty(Order = 10)]
+        [JsonPropertyOrder(10)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Guid[] LicenseGroups { get; private set; }
-        [JsonProperty(Order = 20)]
+
+        [JsonPropertyOrder(20)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public bool SkipSyncCheck { get; private set; }
-        [JsonProperty(Order = 30)]
+
+        [JsonPropertyOrder(30)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public bool SkipDynamicGroupCheck { get; private set; }
 
         public MsolLicenseGroupTask(Guid[] licenseGroups, bool skipSyncCheck, bool skipDynamicGroupCheck)
@@ -71,28 +71,16 @@ namespace Kungsbacka.AccountTasks
             : this(null, false, false)
         {
         }
-
-        public bool ShouldSerializeLicenseGroups()
-        {
-            return LicenseGroups != null;
-        }
-
-        public bool ShouldSerializeSkipSyncCheck()
-        {
-            return SkipSyncCheck;
-        }
-
-        public bool ShouldSerializeSkipDynamicGroupCheck()
-        {
-            return SkipDynamicGroupCheck;
-        }
     }
 
     public class MsolRemoveLicenseGroupTask : BasicTask
     {
-        [JsonProperty(Order = 10)]
+        [JsonPropertyOrder(10)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Guid[] LicenseGroups { get; private set; }
-        [JsonProperty(Order = 20)]
+
+        [JsonPropertyOrder(20)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public bool SkipBaseLicenseCheck { get; private set; }
 
         public MsolRemoveLicenseGroupTask(Guid[] licenseGroups, bool skipBaseLicenseCheck)
@@ -106,16 +94,12 @@ namespace Kungsbacka.AccountTasks
             : this(licenseGroups, false)
         {
         }
-
-        public bool ShouldSerializeSkipBaseLicenseCheck()
-        {
-            return SkipBaseLicenseCheck;
-        }
     }
 
     public class MsolRemoveAllLicenseGroupTask : BasicTask
     {
-        [JsonProperty(Order = 10)]
+        [JsonPropertyOrder(10)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public bool SkipStashLicense { get; private set; }
 
         public MsolRemoveAllLicenseGroupTask(bool skipStashLicense)
@@ -127,11 +111,6 @@ namespace Kungsbacka.AccountTasks
         public MsolRemoveAllLicenseGroupTask()
             : this(false)
         {
-        }
-
-        public bool ShouldSerializeSkipStashLicense()
-        {
-            return SkipStashLicense;
         }
     }
 
@@ -145,7 +124,8 @@ namespace Kungsbacka.AccountTasks
 
     public class MsolRestoreLicenseGroupTask : BasicTask
     {
-        [JsonProperty(Order = 10)]
+        [JsonPropertyOrder(10)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public bool SkipSyncCheck { get; private set; }
 
         public MsolRestoreLicenseGroupTask(bool skipSyncCheck)
@@ -158,16 +138,11 @@ namespace Kungsbacka.AccountTasks
             : this(false)
         {
         }
-
-        public bool ShouldSerializeSkipSyncCheck()
-        {
-            return SkipSyncCheck;
-        }
     }
 
     public class MicrosoftOnlineTask : SequenceTask
     {
-        [JsonProperty(Order = 10)]
+        [JsonPropertyOrder(10)]
         public Guid[] LicenseGroups { get; private set; }
 
         public MicrosoftOnlineTask(Guid[] licenseGroups)
@@ -203,11 +178,11 @@ namespace Kungsbacka.AccountTasks
 
     public class MicrosoftOnlineWithMailboxTask : SequenceTask
     {
-        [JsonProperty(Order = 10)]
-        [JsonConverter(typeof(StringEnumConverter))]
+        [JsonPropertyOrder(10)]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public MailboxType Type { get; private set; }
 
-        [JsonProperty(Order = 20)]
+        [JsonPropertyOrder(20)]
         public Guid[] LicenseGroups { get; private set; }
 
         public MicrosoftOnlineWithMailboxTask(MailboxType type, Guid[] licenseGroups)
@@ -280,8 +255,8 @@ namespace Kungsbacka.AccountTasks
 
     public class MicrosoftOnlineRestoreTask : SequenceTask
     {
-        [JsonProperty(Order = 10)]
-        [JsonConverter(typeof(StringEnumConverter))]
+        [JsonPropertyOrder(10)]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public MailboxType Type { get; private set; }
 
         public MicrosoftOnlineRestoreTask(MailboxType type)
@@ -314,11 +289,11 @@ namespace Kungsbacka.AccountTasks
 
     public class MicrosoftOnlineAutomaticLicenseChangeTask : SequenceTask
     {
-        [JsonProperty(Order = 10)]
-        [JsonConverter(typeof(StringEnumConverter))]
+        [JsonPropertyOrder(10)]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public MailboxType Type { get; private set; }
 
-        [JsonProperty(Order = 20)]
+        [JsonPropertyOrder(20)]
         public Guid[] LicenseGroups { get; private set; }
 
         public MicrosoftOnlineAutomaticLicenseChangeTask(MailboxType type, Guid[] licenseGroups, CurrenLicensingStatus currenLicensingStatus, NewLicenseingStatus newLicenseingStatus)

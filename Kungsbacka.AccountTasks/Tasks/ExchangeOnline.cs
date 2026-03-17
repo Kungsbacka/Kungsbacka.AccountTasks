@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+using System.Text.Json.Serialization;
 
 namespace Kungsbacka.AccountTasks
 {
@@ -7,8 +6,9 @@ namespace Kungsbacka.AccountTasks
     {
         // Not optional, but declare as nullable anyway since mailbox type
         // can also come from the sequence task container.
-        [JsonProperty(Order = 10)]
-        [JsonConverter(typeof(StringEnumConverter))]
+        [JsonPropertyOrder(10)]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public MailboxType? Type { get; private set; }
 
         public ConfigureOnlineMailboxTask(MailboxType? type)
@@ -20,11 +20,6 @@ namespace Kungsbacka.AccountTasks
         public ConfigureOnlineMailboxTask()
             : this(null)
         {
-        }
-
-        public bool ShouldSerializeType()
-        {
-            return Type != null;
         }
     }
 
@@ -38,8 +33,8 @@ namespace Kungsbacka.AccountTasks
 
     public class SetOnlineMailboxTypeTask : BasicTask
     {
-        [JsonProperty(Order = 10)]
-        [JsonConverter(typeof(StringEnumConverter))]
+        [JsonPropertyOrder(10)]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public ExchangeMailboxType MailboxType { get; private set; }
 
         public SetOnlineMailboxTypeTask(ExchangeMailboxType mailboxType)

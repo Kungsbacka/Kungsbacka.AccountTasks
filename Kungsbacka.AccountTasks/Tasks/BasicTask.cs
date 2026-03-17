@@ -1,15 +1,28 @@
-﻿using Newtonsoft.Json;
 using System;
+using System.ComponentModel;
+using System.Text.Json.Serialization;
 
 namespace Kungsbacka.AccountTasks
 {
     public class BasicTask : AccountTask
     {
-        [JsonProperty(Order = 2)]
-        public long? RetryCount { get; set; }
+        [JsonPropertyOrder(2)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public long? RetryCount
+        {
+            get => _retryCount;
+            set => _retryCount = value > 0 ? value : null;
+        }
+        private long? _retryCount;
 
-        [JsonProperty(Order = 3)]
+        [JsonIgnore]
         public DateTime? WaitUntil { get; set; }
+
+        [JsonPropertyName("WaitUntil")]
+        [JsonPropertyOrder(3)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public DateTime? WaitUntilSerialized => WaitUntil.HasValue && WaitUntil >= DateTime.Now ? WaitUntil : null;
 
         public BasicTask(string taskName)
             : this(taskName, taskName) { }
@@ -17,16 +30,6 @@ namespace Kungsbacka.AccountTasks
         public BasicTask(string taskName, string displayName)
             : base(taskName, displayName)
         {
-        }
-
-        public bool ShouldSerializeRetryCount()
-        {
-            return RetryCount > 0;
-        }
-
-        public bool ShouldSerializeWaitUntil()
-        {
-            return WaitUntil >= DateTime.Now;
         }
     }
 }

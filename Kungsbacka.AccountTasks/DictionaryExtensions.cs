@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -24,15 +24,15 @@ namespace Kungsbacka.AccountTasks
 
         public static List<AccountTask> GetTaskSequence(this IDictionary<string, object> dictionary)
         {
-            dynamic taskSequence = dictionary.GetValueOrDefault<dynamic>("Tasks");
-            if (!(taskSequence is List<object>) || taskSequence.Count == 0)
+            List<object> taskSequence = dictionary.GetValueOrDefault<List<object>>("Tasks");
+            if (taskSequence == null || taskSequence.Count == 0)
             {
                 throw new ArgumentException("Tasks");
             }
             List<AccountTask> taskList = new List<AccountTask>(taskSequence.Count);
-            foreach (dynamic dynamicTask in taskSequence)
+            foreach (object item in taskSequence)
             {
-                AccountTask task = TaskFactory.CreateTask(dynamicTask);
+                AccountTask task = TaskFactory.CreateTask((IDictionary<string, object>)item);
                 taskList.Add(task);
             }
             return taskList;
