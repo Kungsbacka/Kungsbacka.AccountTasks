@@ -11,6 +11,15 @@ namespace Kungsbacka.AccountTasks
         }
     }
 
+
+    public class DisableMailboxTask : BasicTask
+    {
+        public DisableMailboxTask()
+            : base("DisableMailbox", "Disable mailbox")
+        {
+        }
+    }
+
     public class ConfigureRemoteMailboxTask : BasicTask
     {
         public ConfigureRemoteMailboxTask()

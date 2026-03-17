@@ -120,6 +120,11 @@ namespace Kungsbacka.AccountTasks
                         returnTask = new ConfigureRemoteMailboxTask();
                         break;
                     }
+                case "DisableMailbox":
+                    {
+                        returnTask = new DisableMailboxTask();
+                        break;
+                    }
                 case "SamlId":
                     {
                         returnTask = new SamlIdTask();
@@ -136,6 +141,15 @@ namespace Kungsbacka.AccountTasks
                 case "MicrosoftOnlineWithMailbox":
                     {
                         returnTask = new MicrosoftOnlineWithMailboxTask(
+                            dictionary.GetEnum<MailboxType>("Type"),
+                            dictionary.GetGuidArray("LicenseGroups"),
+                            dictionary.GetTaskSequence()
+                        );
+                        break;
+                    }
+                case "MicrosoftOnlineAutomaticLicenseChangeTask":
+                    {
+                        returnTask = new MicrosoftOnlineAutomaticLicenseChangeTask(
                             dictionary.GetEnum<MailboxType>("Type"),
                             dictionary.GetGuidArray("LicenseGroups"),
                             dictionary.GetTaskSequence()

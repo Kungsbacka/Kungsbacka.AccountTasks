@@ -135,6 +135,13 @@ namespace Kungsbacka.AccountTasks
         }
     }
 
+    public class MsolClearStashedLicenseTask : BasicTask
+    {
+        public MsolClearStashedLicenseTask()
+            : base("MsolClearStashedLicense", "Clears attribute that store stashed licenses")
+        {
+        }
+    }
 
     public class MsolRestoreLicenseGroupTask : BasicTask
     {
@@ -303,5 +310,211 @@ namespace Kungsbacka.AccountTasks
             Type = type;
             SetTasks(tasks);
         }
+    }
+
+    public class MicrosoftOnlineAutomaticLicenseChangeTask : SequenceTask
+    {
+        [JsonProperty(Order = 10)]
+        [JsonConverter(typeof(StringEnumConverter))]
+        public MailboxType Type { get; private set; }
+
+        [JsonProperty(Order = 20)]
+        public Guid[] LicenseGroups { get; private set; }
+
+        public MicrosoftOnlineAutomaticLicenseChangeTask(MailboxType type, Guid[] licenseGroups, CurrenLicensingStatus currenLicensingStatus, NewLicenseingStatus newLicenseingStatus)
+            : base("MicrosoftOnlineAutomaticLicenseChangeTask", "Change Microsoft 365 license")
+        {
+            Type = type;
+            LicenseGroups = licenseGroups;
+
+            // Note: Branches producing identical tasks are kept separate intentionally to allow future divergence
+
+            // Unlicensed -> Unlicensed: not allowed
+            if (currenLicensingStatus == CurrenLicensingStatus.Unlicensed && newLicenseingStatus == NewLicenseingStatus.Unlicensed)
+            {
+                throw new ArgumentException("Transitioning from unlicensed to unlicensed is not allowed.");
+            }
+
+            // Unlicensed -> License w/ mail
+            if (currenLicensingStatus == CurrenLicensingStatus.Unlicensed && newLicenseingStatus == NewLicenseingStatus.MailEnabled)
+            {
+                SetTasks(new List<AccountTask> {
+                    new EnableRemoteMailboxTask(),
+                    new WaitTask(5),
+                    new ConfigureRemoteMailboxTask(),
+                    new MsolEnableSyncTask(),
+                    new MsolLicenseGroupTask(skipSyncCheck: true, skipDynamicGroupCheck: false),
+                    new WaitTask(120),
+                    new ConfigureOnlineMailboxTask(),
+                    new ConfigureOnlineOwaTask()
+                });
+            }
+            // Unlicensed -> License w/o mail
+            else if (currenLicensingStatus == CurrenLicensingStatus.Unlicensed && newLicenseingStatus == NewLicenseingStatus.MailDisabled)
+            {
+                SetTasks(new List<AccountTask> {
+                    new MsolEnableSyncTask(),
+                    new MsolLicenseGroupTask(skipSyncCheck: true, skipDynamicGroupCheck: false)
+                });
+            }
+            // Active license w/ mail -> License w/ mail
+            else if (currenLicensingStatus == CurrenLicensingStatus.ActiveMailEnabled && newLicenseingStatus == NewLicenseingStatus.MailEnabled)
+            {
+                SetTasks(new List<AccountTask> {
+                    new MsolLicenseGroupTask(skipSyncCheck: true, skipDynamicGroupCheck: false)
+                });
+            }
+            // Active license w/ mail -> License w/o mail
+            else if (currenLicensingStatus == CurrenLicensingStatus.ActiveMailEnabled && newLicenseingStatus == NewLicenseingStatus.MailDisabled)
+            {
+                SetTasks(new List<AccountTask> {
+                    new MsolLicenseGroupTask(skipSyncCheck: true, skipDynamicGroupCheck: false)
+                });
+            }
+            // Active license w/ mail -> Unlicensed
+            else if (currenLicensingStatus == CurrenLicensingStatus.ActiveMailEnabled && newLicenseingStatus == NewLicenseingStatus.Unlicensed)
+            {
+                SetTasks(new List<AccountTask> {
+                    new MsolRemoveAllLicenseGroupTask()
+                });
+            }
+            // Active license w/o mail -> License w/ mail
+            else if (currenLicensingStatus == CurrenLicensingStatus.ActiveMailDisabled && newLicenseingStatus == NewLicenseingStatus.MailEnabled)
+            {
+                SetTasks(new List<AccountTask> {
+                    new EnableRemoteMailboxTask(),
+                    new WaitTask(5),
+                    new ConfigureRemoteMailboxTask(),
+                    new MsolEnableSyncTask(),
+                    new MsolLicenseGroupTask(skipSyncCheck: true, skipDynamicGroupCheck: false),
+                    new WaitTask(120),
+                    new ConfigureOnlineMailboxTask(),
+                    new ConfigureOnlineOwaTask()
+                });
+            }
+            // Active license w/o mail -> License w/o mail
+            else if (currenLicensingStatus == CurrenLicensingStatus.ActiveMailDisabled && newLicenseingStatus == NewLicenseingStatus.MailDisabled)
+            {
+                SetTasks(new List<AccountTask> {
+                    new MsolLicenseGroupTask(skipSyncCheck: true, skipDynamicGroupCheck: false)
+                });
+            }
+            // Active license w/o mail -> Unlicensed
+            else if (currenLicensingStatus == CurrenLicensingStatus.ActiveMailDisabled && newLicenseingStatus == NewLicenseingStatus.Unlicensed)
+            {
+                SetTasks(new List<AccountTask> {
+                    new MsolRemoveAllLicenseGroupTask()
+                });
+            }
+            // Stashed license w/ mail -> License w/ mail
+            else if (currenLicensingStatus == CurrenLicensingStatus.StashedMailEnabled && newLicenseingStatus == NewLicenseingStatus.MailEnabled)
+            {
+                SetTasks(new List<AccountTask>
+                {
+                    new MsolClearStashedLicenseTask(),
+                    new MsolEnableSyncTask(),
+                    new WaitTask(1),
+                    new MsolLicenseGroupTask(skipSyncCheck: true, skipDynamicGroupCheck: false),
+                    new WaitTask(120),
+                    new RemoveFromOnpremGroupTask("U-exch-ndr-mailbox"),
+                    new SetOnlineMailboxTypeTask(ExchangeMailboxType.Regular),
+                    new SetHiddenFromAddressListTask(false),
+                    new ConfigureOnlineMailboxTask(),
+                    new ConfigureOnlineOwaTask()
+                });
+            }
+            // Stashed license w/ mail -> License w/o mail
+            else if (currenLicensingStatus == CurrenLicensingStatus.StashedMailEnabled && newLicenseingStatus == NewLicenseingStatus.MailDisabled)
+            {
+                SetTasks(new List<AccountTask>
+                {
+                    new MsolClearStashedLicenseTask(),
+                    new MsolEnableSyncTask(),
+                    new WaitTask(1),
+                    new MsolLicenseGroupTask(skipSyncCheck: true, skipDynamicGroupCheck: false),
+                    new RemoveFromOnpremGroupTask("U-exch-ndr-mailbox"),
+                    new SetOnlineMailboxTypeTask(ExchangeMailboxType.Regular),
+                    new SetHiddenFromAddressListTask(false)
+                });
+            }
+            // Stashed license w/ mail -> Unlicensed
+            else if (currenLicensingStatus == CurrenLicensingStatus.StashedMailEnabled && newLicenseingStatus == NewLicenseingStatus.Unlicensed)
+            {
+                SetTasks(new List<AccountTask>
+                {
+                    new MsolClearStashedLicenseTask(),
+                    new WaitTask(1),
+                    new MsolLicenseGroupTask(skipSyncCheck: true, skipDynamicGroupCheck: false),
+                    new RemoveFromOnpremGroupTask("U-exch-ndr-mailbox"),
+                    new SetOnlineMailboxTypeTask(ExchangeMailboxType.Regular),
+                    new SetHiddenFromAddressListTask(false)
+                });
+            }
+            // Stashed license w/o mail -> License w/ mail
+            else if (currenLicensingStatus == CurrenLicensingStatus.StashedMailDisabled && newLicenseingStatus == NewLicenseingStatus.MailEnabled)
+            {
+                SetTasks(new List<AccountTask> {
+                    new MsolClearStashedLicenseTask(),
+                    new EnableRemoteMailboxTask(),
+                    new WaitTask(5),
+                    new ConfigureRemoteMailboxTask(),
+                    new MsolEnableSyncTask(),
+                    new MsolLicenseGroupTask(skipSyncCheck: true, skipDynamicGroupCheck: false),
+                    new WaitTask(120),
+                    new ConfigureOnlineMailboxTask(),
+                    new ConfigureOnlineOwaTask()
+                });
+            }
+            // Stashed license w/o mail -> License w/o mail
+            else if (currenLicensingStatus == CurrenLicensingStatus.StashedMailDisabled && newLicenseingStatus == NewLicenseingStatus.MailDisabled)
+            {
+                SetTasks(new List<AccountTask> {
+                    new MsolClearStashedLicenseTask(),
+                    new WaitTask(1),
+                    new MsolLicenseGroupTask(skipSyncCheck: true, skipDynamicGroupCheck: false)
+                });
+            }
+            // Stashed license w/o mail -> Unlicensed
+            else if (currenLicensingStatus == CurrenLicensingStatus.StashedMailDisabled && newLicenseingStatus == NewLicenseingStatus.Unlicensed)
+            {
+                SetTasks(new List<AccountTask> {
+                    new MsolClearStashedLicenseTask(),
+                    new WaitTask(1),
+                    new MsolRemoveAllLicenseGroupTask()
+                });
+            }
+            else
+            {
+                throw new ArgumentOutOfRangeException("Unhandled combination of licensing states.");
+            }
+        }
+
+        public MicrosoftOnlineAutomaticLicenseChangeTask(MailboxType type, Guid[] licenseGroups, List<AccountTask> tasks)
+            : base("MicrosoftOnlineAutomaticLicenseChangeTask", "Change Microsoft 365 license")
+        {
+            if (tasks == null || tasks.Count == 0)
+            {
+                throw new ArgumentException(nameof(tasks));
+            }
+            Type = type;
+            LicenseGroups = licenseGroups;
+            SetTasks(tasks);
+        }
+    }
+
+    public enum CurrenLicensingStatus
+    {
+        ActiveMailEnabled,
+        ActiveMailDisabled,
+        StashedMailEnabled,
+        StashedMailDisabled,
+        Unlicensed
+    }
+
+    public enum NewLicenseingStatus
+    {
+        MailEnabled,
+        MailDisabled,
+        Unlicensed
     }
 }
