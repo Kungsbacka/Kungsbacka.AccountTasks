@@ -1,16 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <!--
-    net472  - PersonalApi
-    net9.0  - LifecycleManager (PowerShell 7)
-    net10.0 - ManageUsers, CreateUsers
-    -->
-
   <PropertyGroup>
-    <TargetFrameworks>net472;net9.0;net10.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
+  <ItemGroup>
     <PackageReference Include="System.Text.Json" Version="9.0.3" />
   </ItemGroup>
 
