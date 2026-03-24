@@ -21,7 +21,7 @@ namespace Kungsbacka.AccountTasks.Tests
         [Fact]
         public void SerializeDeserializeWithRetryCount()
         {
-            var task = new MsolLicenseTask([new MsolLicense("SKU-ID")])
+            var task = new MsolEnableSyncTask()
             {
                 Id = 5
             };
@@ -30,9 +30,8 @@ namespace Kungsbacka.AccountTasks.Tests
             task.RetryCount = 3;
             string json = task.ToJson();
             var deserializedTasks = TaskFactory.DeserializeTasks(json);
-            var msolLicenseTask = (MsolLicenseTask)deserializedTasks[0];
+            var msolLicenseTask = (MsolEnableSyncTask)deserializedTasks[0];
             Assert.Equal(date.ToString("s"), msolLicenseTask.WaitUntil?.ToString("s"));
-            Assert.Equal("SKU-ID", msolLicenseTask.License[0].SkuId);
         }
 
         [Fact]
@@ -186,18 +185,6 @@ namespace Kungsbacka.AccountTasks.Tests
             Assert.True(doc.RootElement.TryGetProperty("Type", out var prop));
             Assert.Equal(JsonValueKind.String, prop.ValueKind);
             Assert.Equal("Employee", prop.GetString());
-        }
-
-        // --- Nested object round-trips ---
-
-        [Fact]
-        public void MsolLicense_WithDisabledPlans_RoundTrip()
-        {
-            var task = new MsolLicenseTask([new MsolLicense("SKU-ID", ["PLAN-1", "PLAN-2"])]);
-            var json = task.ToJson();
-            var deserialized = (MsolLicenseTask)TaskFactory.DeserializeTasks(json)[0];
-            Assert.Equal("SKU-ID", deserialized.License[0].SkuId);
-            Assert.Equal(new[] { "PLAN-1", "PLAN-2" }, deserialized.License[0].DisabledPlans);
         }
 
         [Fact]

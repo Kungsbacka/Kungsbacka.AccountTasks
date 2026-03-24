@@ -12,23 +12,23 @@ namespace Kungsbacka.AccountTasks
         }
     }
 
-    public class MsolLicenseTask : BasicTask
-    {
-        [JsonPropertyOrder(10)]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public MsolLicense[] License { get; private set; }
+    //public class MsolLicenseTask : BasicTask
+    //{
+    //    [JsonPropertyOrder(10)]
+    //    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    //    public MsolLicense[] License { get; private set; }
 
-        public MsolLicenseTask(MsolLicense[] license)
-            : base("MsolLicense", "Directly assign Microsoft 365 licenses")
-        {
-            License = license;
-        }
+    //    public MsolLicenseTask(MsolLicense[] license)
+    //        : base("MsolLicense", "Directly assign Microsoft 365 licenses")
+    //    {
+    //        License = license;
+    //    }
 
-        public MsolLicenseTask()
-            : this(null)
-        {
-        }
-    }
+    //    public MsolLicenseTask()
+    //        : this(null)
+    //    {
+    //    }
+    //}
 
     public class MsolLicenseGroupTask : BasicTask
     {

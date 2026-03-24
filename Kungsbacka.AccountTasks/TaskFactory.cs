@@ -77,11 +77,6 @@ namespace Kungsbacka.AccountTasks
                         returnTask = new MsolEnableSyncTask();
                         break;
                     }
-                case "MsolLicense":
-                    {
-                        returnTask = new MsolLicenseTask(dictionary.GetMsolLicenseArray());
-                        break;
-                    }
                 case "MsolLicenseGroup":
                     {
                         bool skipSyncCheck = dictionary.GetValueOrDefault<bool>("SkipSyncCheck");
