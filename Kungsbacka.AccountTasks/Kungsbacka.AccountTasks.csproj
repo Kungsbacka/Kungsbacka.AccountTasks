@@ -4,8 +4,9 @@
     <TargetFrameworks>netstandard2.0;net9.0</TargetFrameworks>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="System.Text.Json" Version="10.0.5" />
+  <!-- System.Text.Json is in-boxed with PowerShell, so we only need to reference it for netstandard2.0 -->
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <PackageReference Include="System.Text.Json" Version="8.0.5" />
   </ItemGroup>
 
 </Project>
