@@ -150,7 +150,8 @@ namespace Kungsbacka.AccountTasks
                     }
                 case "DisableMailbox":
                     {
-                        returnTask = new DisableMailboxTask();
+                        bool keepSyncing = dictionary.GetValueOrDefault<bool>("KeepSyncing");
+                        returnTask = new DisableMailboxTask(keepSyncing);
                         break;
                     }
                 case "SamlId":

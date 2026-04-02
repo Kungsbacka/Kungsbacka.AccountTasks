@@ -10,12 +10,14 @@ namespace Kungsbacka.AccountTasks
         }
     }
 
-
     public class DisableMailboxTask : BasicTask
     {
-        public DisableMailboxTask()
+        public bool KeepSyncing { get; private set; }        
+
+        public DisableMailboxTask(bool keepSyncing)
             : base("DisableMailbox", "Disable mailbox")
         {
+            KeepSyncing = keepSyncing;
         }
     }
 

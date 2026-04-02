@@ -343,14 +343,16 @@ namespace Kungsbacka.AccountTasks
             else if (currenLicensingStatus == CurrenLicensingStatus.ActiveMailEnabled && newLicenseingStatus == NewLicenseingStatus.MailDisabled)
             {
                 SetTasks(new List<AccountTask> {
-                    new MsolLicenseGroupTask(skipSyncCheck: true, skipDynamicGroupCheck: false)
+                    new MsolLicenseGroupTask(skipSyncCheck: true, skipDynamicGroupCheck: false),
+                    new DisableMailboxTask(keepSyncing: true)
                 });
             }
             // Active license w/ mail -> Unlicensed
             else if (currenLicensingStatus == CurrenLicensingStatus.ActiveMailEnabled && newLicenseingStatus == NewLicenseingStatus.Unlicensed)
             {
                 SetTasks(new List<AccountTask> {
-                    new MsolRemoveAllLicenseGroupTask()
+                    new MsolRemoveAllLicenseGroupTask(),
+                    new DisableMailboxTask(keepSyncing: false)
                 });
             }
             // Active license w/o mail -> License w/ mail
@@ -409,7 +411,8 @@ namespace Kungsbacka.AccountTasks
                     new MsolLicenseGroupTask(skipSyncCheck: true, skipDynamicGroupCheck: false),
                     new RemoveFromOnpremGroupTask("U-exch-ndr-mailbox"),
                     new SetOnlineMailboxTypeTask(ExchangeMailboxType.Regular),
-                    new SetHiddenFromAddressListTask(false)
+                    new SetHiddenFromAddressListTask(false),
+                    new DisableMailboxTask(keepSyncing: true)
                 });
             }
             // Stashed license w/ mail -> Unlicensed
@@ -422,7 +425,8 @@ namespace Kungsbacka.AccountTasks
                     new MsolLicenseGroupTask(skipSyncCheck: true, skipDynamicGroupCheck: false),
                     new RemoveFromOnpremGroupTask("U-exch-ndr-mailbox"),
                     new SetOnlineMailboxTypeTask(ExchangeMailboxType.Regular),
-                    new SetHiddenFromAddressListTask(false)
+                    new SetHiddenFromAddressListTask(false),
+                    new DisableMailboxTask(keepSyncing: false)
                 });
             }
             // Stashed license w/o mail -> License w/ mail
